@@ -1,5 +1,7 @@
 <%!
     import  os
+    def urllike(name):
+        return name.replace('/','>')
 %>
 
 <html>
@@ -12,6 +14,11 @@
       <script src="https://oss.maxcdn.com/respond/1.4.2/respond.min.js"></script>
     <![endif]-->
     <title>Shile</title>
+    <script>
+        function redirect() {
+            window.location.assign('/view/'+document.getElementById('new_pathname').value.replace('/','>').replace('\\','>'))
+        }
+    </script>
 </head>
 <body><div class="container">
     <div class="navbar navbar-default" role="navigation">
@@ -19,33 +26,61 @@
             <span class="glyphicon glyphicon-hdd"></span>
             &nbsp;Shile
         </a>
+        <div class="navbar-form navbar-right">
+            <div class="form-group">
+                <input id="new_pathname" type="text" value="${origins}" class="form-control" style="width: 400px" placeholder="目录名">
+            </div>
+            <button type="button" onclick="redirect()" class="btn btn-primary">进入</button>
+        </div>
     </div>
-    <div class="page-header"><h1>
-        ${origins}
-    </h1></div>
+    <div class="page-header"><h3>
+        <ol class="breadcrumb">
+            <%
+                paths=origins.split('/')
+                for a in range(len(paths)):
+                    paths[a]=paths[a]+'>'
+            %>
+            % for l in range(len(paths)):
+                <li><a href="/view/${''.join(paths[:l+1])}">
+                    ${paths[l][:-1]}
+                </a></li>
+            %endfor
+        </ol>
+    </h3></div>
     <table class="table table-hover">
         <thead>
             <tr>
-                <th>文件名</th>
-                <th>类型</th>
+                <th style="width: 70%;">文件名</th>
+                <th style="width: 30%;text-align: right">大小</th>
             </tr>
         </thead>
         <tbody>
             % for f in files:
                 <tr>
-                    <td><a href="/views/${os.path.join(origins,f).replace('\\','>')}">
-                         % if os.path.isdir(f):
+                    <td><a href="/view/${urllike(origins+'>'+f)}">
+                         % if os.path.isdir(origins+'/'+f):
                             <span class="glyphicon glyphicon-folder-open"></span>
                         % else:
                             <span class="glyphicon glyphicon-file"></span>
                         % endif
                         &nbsp;${f}
                     </a></td>
-                    <td>
+                    <td style="text-align: right">
+                        % if os.path.isdir(origins+'/'+f):
+                            目录
+                        % else:
+                            ${'%.1f'%(os.path.getsize(origins+'/'+f)/1024)} KB
+                        %endif
                     </td>
                 </tr>
             % endfor
         </tbody>
     </table>
-</body>
+    % if len(files)==0:
+        <div class="alert alert-info">
+            <span class="glyphicon glyphicon-inbox"></span>
+            &nbsp;这个目录里什么都没有
+        </div>
+    % endif
+</div></body>
 </html>
