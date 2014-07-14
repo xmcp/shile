@@ -18,7 +18,21 @@
     <title>Shile</title>
     <script>
         function redirect() {
-            window.location.assign('/view/'+document.getElementById('new_pathname').value.replace('/','>').replace('\\','>'))
+            window.location.assign('/view/'+document.getElementById('new_pathname').value.replace('\\','>').replace('/','>'))
+        }
+        function del(name) {
+            if(confirm('确定删除 '+name+' 吗？'))
+                window.location.assign('/delete/${urllikes+">"}'+name)
+        }
+        function ren(name) {
+            newname=prompt('为 '+name+' 输入新的文件名：')
+            if(newname!=''&&newname!=null)
+                window.location.assign('/rename/${urllikes}/'+name+'/'+newname)
+        }
+        function newfolder() {
+            n=prompt('新目录名：')
+            if(n!=''&&n!=null)
+                window.location.assign('/newfolder/${urllikes}/'+n)
         }
     </script>
 </head>
@@ -53,14 +67,15 @@
     <table class="table table-hover">
         <thead>
             <tr>
-                <th style="width: 70%;">文件名</th>
+                <th style="width: 60%;">文件名</th>
                 <th style="width: 30%;text-align: right">大小</th>
+                <th style="width: 10%;text-align: right">操作</th>
             </tr>
         </thead>
         <tbody>
             % for f in files:
                 <tr>
-                    <td><a href="/view/${urllike(origins+'>'+f)}">
+                    <td><a href="/view/${urllikes+'>'+f}">
                          % if os.path.isdir(origins+'/'+f):
                             <span class="glyphicon glyphicon-folder-open"></span>
                         % else:
@@ -75,6 +90,14 @@
                             ${'%.1f'%(os.path.getsize(origins+'/'+f)/1024)} KB
                         %endif
                     </td>
+                    <td style="text-align: right">
+                        <button class="btn-link" onclick="del('${f}')">
+                            <span class="glyphicon glyphicon-trash"></span>
+                        </button>
+                        <button class="btn-link" onclick="ren('${f}')">
+                            <span class="glyphicon glyphicon-pencil"></span>
+                        </button>
+                    </td>
                 </tr>
             % endfor
         </tbody>
@@ -85,5 +108,38 @@
             &nbsp;这个目录里什么都没有
         </div>
     % endif
+    <br />
+    <div class="btn-group btn-group-justified">
+        <button class="btn btn-success" onclick="newfolder()" style="width:25%" role="button">
+            <span class="glyphicon glyphicon-folder-open"></span>
+            &nbsp;新建目录
+        </button>
+        <button class="btn btn-primary" data-toggle="modal" data-target="#upload-modal" style="width: 75%;" role="button">
+            <span class="glyphicon glyphicon-cloud-upload"></span>
+            &nbsp;上传文件
+        </button>
+    </div>
+    <div class="modal fade" id="upload-modal">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <button type="button" class="close" data-dismiss="modal"><span aria-hidden="true">&times;</span><span class="sr-only">Close</span></button>
+                    <h4 class="modal-title">上传文件</h4>
+                </div>
+                <div class="modal-body">
+                    <form action="/upload" method="post" enctype="multipart/form-data">
+                        <div class="input-group">
+                            <span class="input-group-addon"><span class="glyphicon glyphicon-paperclip"></span></span>
+                            <input type="hidden" name="path" value="${urllikes}">
+                            <input type="file" name="upfile" class="form-control">
+                            <span class="input-group-btn">
+                                <button class="btn btn-primary" type="submit">上传</button>
+                            </span>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
 </div></body>
 </html>
