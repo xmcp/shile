@@ -17,8 +17,29 @@
     <![endif]-->
     <title>Shile</title>
     <script>
+        function escape(s) {
+            return s.replace(/[<>&"]/g,function(c){return {'<':'&lt;','>':'&gt;','&':'&amp;','"':'&quot;'}[c];});
+        }
+        function cmdcallback(e) {
+            var keynum
+            if(window.event) keynum=e.keyCode //IE
+            else keynum=e.which
+            if(keynum==13) cmd() //enter
+            return true
+        }
+        function cmd() {
+            cmdtext=document.getElementById('cmd-text').value
+            var cmdhex=''
+            for(var now=0;now<cmdtext.length;now++)
+                cmdhex+=cmdtext.charCodeAt(now).toString(16)
+            document.getElementById('cmd-result').src='/cmd/'+cmdhex
+        }
         function redirect() {
             window.location.assign('/view/'+document.getElementById('new_pathname').value.replace('\\','>').replace('/','>'))
+        }
+        function run(name) {
+            if(confirm('确定在远端打开 '+name+' 吗？'))
+                window.location.assign('/run/${urllikes+">"}'+name)
         }
         function del(name) {
             if(confirm('确定删除 '+name+' 吗？'))
@@ -42,6 +63,7 @@
             <span class="glyphicon glyphicon-hdd"></span>
             &nbsp;Shile
         </a>
+        <button type="button" class="btn btn-default navbar-btn" data-toggle="modal" data-target="#cmd-modal">提示符</button>
         <button type="button" class="btn btn-default navbar-btn" onclick="window.location.assign('/logout')">注销</button>
         <div class="navbar-form navbar-right" style="margin-right: 0px">
             <div class="form-group">
@@ -61,15 +83,15 @@
                 <li><a href="/view/${''.join(paths[:l+1])}">
                     ${paths[l][:-1]}
                 </a></li>
-            %endfor
+            % endfor
         </ol>
     </h3></div>
     <table class="table table-hover">
         <thead>
             <tr>
-                <th style="width: 60%;">文件名</th>
-                <th style="width: 30%;text-align: right">大小</th>
-                <th style="width: 10%;text-align: right">操作</th>
+                <th style="">文件名</th>
+                <th style="text-align: right">大小</th>
+                <th style="text-align: right">操作</th>
             </tr>
         </thead>
         <tbody>
@@ -88,9 +110,14 @@
                             目录
                         % else:
                             ${'%.1f'%(os.path.getsize(origins+'/'+f)/1024)} KB
-                        %endif
+                        % endif
                     </td>
                     <td style="text-align: right">
+                        % if os.path.isfile(origins+'/'+f):
+                            <button class="btn-link" onclick="run('${f}')">
+                                <span class="glyphicon glyphicon-play"></span>
+                            </button>
+                        % endif
                         <button class="btn-link" onclick="del('${f}')">
                             <span class="glyphicon glyphicon-trash"></span>
                         </button>
@@ -119,6 +146,7 @@
             &nbsp;上传文件
         </button>
     </div>
+    <br />
     <div class="modal fade" id="upload-modal">
         <div class="modal-dialog">
             <div class="modal-content">
@@ -138,6 +166,26 @@
                         </div>
                     </form>
                 </div>
+            </div>
+        </div>
+    </div>
+    <div class="modal fade" id="cmd-modal">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <button type="button" class="close" data-dismiss="modal"><span aria-hidden="true">&times;</span><span class="sr-only">Close</span></button>
+                    <h4 class="modal-title">远程提示符</h4>
+                </div>
+                <div class="modal-body">
+                    <div class="input-group">
+                        <span class="input-group-addon"><span class="glyphicon glyphicon-comment"></span></span>
+                        <input type="text" id="cmd-text" class="form-control" onkeypress="cmdcallback(event)">
+                        <span class="input-group-btn">
+                            <button class="btn btn-primary" onclick="cmd()" type="button">执行</button>
+                        </span>
+                    </div>
+                </div>
+                <iframe id="cmd-result" style="width: 100%;height: 350px" frameborder="0" src="/cmd/68656c70"></iframe>
             </div>
         </div>
     </div>

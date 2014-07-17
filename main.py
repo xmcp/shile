@@ -4,6 +4,7 @@ from mako.template import Template
 import os
 import hashlib
 import shutil
+import subprocess
 
 server_path=os.getcwd().replace('\\','/')
 
@@ -11,14 +12,16 @@ def origin(name):
     return name.replace('>','/')
 def urllike(name):
     return name.replace('/','>').replace('\\','>')
+def chk():
+    try:
+        cherrypy.session['login']
+    except:
+        raise cherrypy.HTTPRedirect('/login')
 
 class shile:
     @cherrypy.expose
     def view(self,path):
-        try:
-            cherrypy.session['login']
-        except:
-            raise cherrypy.HTTPRedirect('/login')
+        chk()
         if not os.path.isdir(origin(path)):
             raise cherrypy.HTTPRedirect('/down/'+path)
         if path[-1]!='>':
@@ -28,10 +31,7 @@ class shile:
 
     @cherrypy.expose
     def down(self,path):
-        try:
-            cherrypy.session['login']
-        except:
-            raise cherrypy.HTTPRedirect('/login')
+        chk()
         return serve_file(origin(path),"application/x-download", "attachment")
 
     @cherrypy.expose
@@ -51,12 +51,8 @@ class shile:
 
     @cherrypy.expose
     def index(self):
-        try:
-            cherrypy.session['login']
-        except:
-            raise cherrypy.HTTPRedirect('/login')
-        else:
-            raise cherrypy.HTTPRedirect('/view/c:')
+        chk()
+        raise cherrypy.HTTPRedirect('/view/c:')
 
     @cherrypy.expose
     def logout(self):
@@ -70,10 +66,7 @@ class shile:
 
     @cherrypy.expose
     def upload(self,path,upfile):
-        try:
-            cherrypy.session['login']
-        except:
-            raise cherrypy.HTTPRedirect('/login')
+        chk()
         if path[-1]!='>':
             path+='>'
         try:
@@ -87,10 +80,7 @@ class shile:
 
     @cherrypy.expose
     def delete(self,path):
-        try:
-            cherrypy.session['login']
-        except:
-            raise cherrypy.HTTPRedirect('/login')
+        chk()
         try:
             if os.path.isdir(origin(path)):
                 shutil.rmtree(origin(path))
@@ -106,10 +96,7 @@ class shile:
 
     @cherrypy.expose
     def rename(self,path,old,new):
-        try:
-            cherrypy.session['login']
-        except:
-            raise cherrypy.HTTPRedirect('/login')
+        chk()
         try:
             os.rename(origin(path)+'/'+old,origin(path)+'/'+new)
         except Exception as e:
@@ -119,15 +106,38 @@ class shile:
 
     @cherrypy.expose
     def newfolder(self,path,name):
-        try:
-            cherrypy.session['login']
-        except:
-            raise cherrypy.HTTPRedirect('/login')
+        chk()
         try:
             os.mkdir(origin(path)+'/'+name)
         except Exception as e:
             return str(e)
         else:
             raise cherrypy.HTTPRedirect('/view/'+path)
+
+    @cherrypy.expose
+    def run(self,path):
+        chk()
+        try:
+            os.startfile((origin(path)))
+        except Exception as e:
+            return str(e)
+        else:
+            uriback=''
+            for a in origin(path).split('/')[:-1]:
+                    uriback+=(a+'/')
+            raise cherrypy.HTTPRedirect('/view/'+urllike(uriback))
+
+    @cherrypy.expose
+    def cmd(self,cmdhex):
+        chk()
+        cmdin=''
+        cherrypy.response.headers['Content-Type'] = 'text/plain'
+        try:
+            for now in range(0,len(cmdhex),2):
+                cmdin+=chr(int(cmdhex[now:now+2],16))
+        except Exception as e:
+            return '命令处理错误：\n\n'+str(e)
+        out=os.popen(cmdin)
+        return '> '+str(cmdin)+'\n\n'+out.read()
 
 cherrypy.quickstart(shile(),'','app.conf')
