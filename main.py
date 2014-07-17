@@ -4,7 +4,7 @@ from mako.template import Template
 import os
 import hashlib
 import shutil
-import subprocess
+import mimetypes
 
 server_path=os.getcwd().replace('\\','/')
 
@@ -17,6 +17,13 @@ def chk():
         cherrypy.session['login']
     except:
         raise cherrypy.HTTPRedirect('/login')
+def err(s):
+    try:
+        template=Template(filename=server_path+'/views/err.html',input_encoding='utf-8')
+        return template.render(err=s)
+    except Exception as e:
+        cherrypy.response.headers['Content-Type'] = 'text/plain'
+        return '在处理您的请求时，出现了一个错误导致无法继续：\n\n'+s+'\n\n在处理该错误时，出现了另一个知名错误：\n\n'+e+'\n\nShile'
 
 class shile:
     @cherrypy.expose
@@ -27,12 +34,18 @@ class shile:
         if path[-1]!='>':
             path+='>'
         template=Template(filename=server_path+'/views/list.html',input_encoding='utf-8')
-        return template.render(origins=origin(path[:-1]),urllikes=urllike(path[:-1]),files=os.listdir(origin(path)))
+        try:
+            return template.render(origins=origin(path[:-1]),urllikes=urllike(path[:-1]),files=os.listdir(origin(path)))
+        except Exception as e:
+            return err(e)
 
     @cherrypy.expose
     def down(self,path):
         chk()
-        return serve_file(origin(path),"application/x-download", "attachment")
+        try:
+            return serve_file(origin(path),"application/x-download", "attachment")
+        except Exception as e:
+            return err(e)
 
     @cherrypy.expose
     def login(self,password=None):
@@ -74,7 +87,7 @@ class shile:
             f.write(upfile.file.read())
             f.close()
         except Exception as e:
-            return str(e)
+            return err(e)
         else:
             raise cherrypy.HTTPRedirect('/view/'+path)
 
@@ -87,7 +100,7 @@ class shile:
             else:
                 os.remove(origin(path))
         except Exception as e:
-            return str(e)
+            return err(e)
         else:
             uriback=''
             for a in origin(path).split('/')[:-1]:
@@ -100,7 +113,7 @@ class shile:
         try:
             os.rename(origin(path)+'/'+old,origin(path)+'/'+new)
         except Exception as e:
-            return str(e)
+            return err(e)
         else:
             raise cherrypy.HTTPRedirect('/view/'+path)
 
@@ -110,7 +123,7 @@ class shile:
         try:
             os.mkdir(origin(path)+'/'+name)
         except Exception as e:
-            return str(e)
+            return err(e)
         else:
             raise cherrypy.HTTPRedirect('/view/'+path)
 
@@ -120,7 +133,7 @@ class shile:
         try:
             os.startfile((origin(path)))
         except Exception as e:
-            return str(e)
+            return err(e)
         else:
             uriback=''
             for a in origin(path).split('/')[:-1]:
@@ -139,5 +152,18 @@ class shile:
             return '命令处理错误：\n\n'+str(e)
         out=os.popen(cmdin)
         return '> '+str(cmdin)+'\n\n'+out.read()
+
+    @cherrypy.expose
+    def prev(self,path):
+        chk()
+        try:
+            f=open(origin(origin(path)))
+            txt=f.read()
+            f.close()
+            cherrypy.response.headers['Content-Type'] = 'text/plain'
+            return txt
+        except Exception as e:
+            return err(e)
+
 
 cherrypy.quickstart(shile(),'','app.conf')

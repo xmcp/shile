@@ -1,5 +1,6 @@
 <%!
     import  os
+    import mimetypes
     def urllike(name):
         return name.replace('/','>')
 %>
@@ -20,11 +21,12 @@
         function escape(s) {
             return s.replace(/[<>&"]/g,function(c){return {'<':'&lt;','>':'&gt;','&':'&amp;','"':'&quot;'}[c];});
         }
-        function cmdcallback(e) {
+        function cmdcallback(e,func) {
             var keynum
             if(window.event) keynum=e.keyCode //IE
             else keynum=e.which
-            if(keynum==13) cmd() //enter
+            if(keynum==13) //enter
+                func()
             return true
         }
         function cmd() {
@@ -33,9 +35,13 @@
             for(var now=0;now<cmdtext.length;now++)
                 cmdhex+=cmdtext.charCodeAt(now).toString(16)
             document.getElementById('cmd-result').src='/cmd/'+cmdhex
+            document.getElementById('cmd-text').value=''
         }
         function redirect() {
             window.location.assign('/view/'+document.getElementById('new_pathname').value.replace('\\','>').replace('/','>'))
+        }
+        function prev(name) {
+                window.open('/prev/${urllikes+">"}'+name)
         }
         function run(name) {
             if(confirm('确定在远端打开 '+name+' 吗？'))
@@ -67,7 +73,7 @@
         <button type="button" class="btn btn-default navbar-btn" onclick="window.location.assign('/logout')">注销</button>
         <div class="navbar-form navbar-right" style="margin-right: 0px">
             <div class="form-group">
-                <input id="new_pathname" type="text" value="${origins}" class="form-control" style="width: 400px" placeholder="目录名">
+                <input id="new_pathname" type="text" value="${origins}" class="form-control" onkeypress="cmdcallback(event,redirect)" style="width: 400px" placeholder="目录名">
             </div>
             <button type="button" onclick="redirect()" class="btn btn-primary">进入</button>
         </div>
@@ -114,6 +120,14 @@
                     </td>
                     <td style="text-align: right">
                         % if os.path.isfile(origins+'/'+f):
+                            <%
+                                ftype=mimetypes.guess_type(f)
+                            %>
+                            % if type(ftype)==type((1,2)) and ftype[0]=='text/plain':
+                                <button class="btn-link" onclick="prev('${f}')">
+                                    <span class="glyphicon glyphicon-align-left"></span>
+                                </button>
+                            % endif
                             <button class="btn-link" onclick="run('${f}')">
                                 <span class="glyphicon glyphicon-play"></span>
                             </button>
@@ -179,7 +193,7 @@
                 <div class="modal-body">
                     <div class="input-group">
                         <span class="input-group-addon"><span class="glyphicon glyphicon-comment"></span></span>
-                        <input type="text" id="cmd-text" class="form-control" onkeypress="cmdcallback(event)">
+                        <input type="text" id="cmd-text" class="form-control" onkeypress="cmdcallback(event,cmd)">
                         <span class="input-group-btn">
                             <button class="btn btn-primary" onclick="cmd()" type="button">执行</button>
                         </span>
