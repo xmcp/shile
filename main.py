@@ -9,9 +9,15 @@ import mimetypes
 server_path=os.getcwd().replace('\\','/')
 
 def origin(name):
-    return name.replace('>','/')
+    out=''
+    for now in range(0,len(name),2):
+        out+=chr(int(name[now:now+2],16))
+    return out
 def urllike(name):
-    return name.replace('/','>').replace('\\','>')
+    out=''
+    for a in name.replace('\\','/'):
+        out+=hex(ord(a))[2:]
+    return out
 def chk():
     try:
         cherrypy.session['login']
@@ -23,19 +29,24 @@ def err(s):
         return template.render(err=s)
     except Exception as e:
         cherrypy.response.headers['Content-Type'] = 'text/plain'
-        return '在处理您的请求时，出现了一个错误导致无法继续：\n\n'+s+'\n\n在处理该错误时，出现了另一个知名错误：\n\n'+e+'\n\nShile'
+        return '在处理您的请求时，出现了一个错误导致无法继续：\n\n'+s+'\n\n在处理该错误时，出现了另一个致命错误：\n\n'+e+'\n\nShile'
 
 class shile:
     @cherrypy.expose
     def view(self,path):
         chk()
-        if not os.path.isdir(origin(path)):
+        path=urllike(origin(path))
+        try:
+            origin(path)
+        except Exception as e:
+            return err(e)
+        if os.path.isfile(origin(path)):
             raise cherrypy.HTTPRedirect('/down/'+path)
-        if path[-1]!='>':
-            path+='>'
+        if path[-2:]!='2f':
+            path+='2f'
         template=Template(filename=server_path+'/views/list.html',input_encoding='utf-8')
         try:
-            return template.render(origins=origin(path[:-1]),urllikes=urllike(path[:-1]),files=os.listdir(origin(path)))
+            return template.render(origins=origin(path[:-2]),urllikes=path[:-2],files=os.listdir(origin(path)))
         except Exception as e:
             return err(e)
 
@@ -65,7 +76,7 @@ class shile:
     @cherrypy.expose
     def index(self):
         chk()
-        raise cherrypy.HTTPRedirect('/view/c:')
+        raise cherrypy.HTTPRedirect('/view/633a')
 
     @cherrypy.expose
     def logout(self):
@@ -80,8 +91,8 @@ class shile:
     @cherrypy.expose
     def upload(self,path,upfile):
         chk()
-        if path[-1]!='>':
-            path+='>'
+        if path[-1]!='2f':
+            path+='2f'
         try:
             f=open(origin(path)+upfile.filename,'wb')
             f.write(upfile.file.read())
@@ -111,7 +122,7 @@ class shile:
     def rename(self,path,old,new):
         chk()
         try:
-            os.rename(origin(path)+'/'+old,origin(path)+'/'+new)
+            os.rename(origin(path)+'/'+origin(old),origin(path)+'/'+origin(new))
         except Exception as e:
             return err(e)
         else:
@@ -121,7 +132,7 @@ class shile:
     def newfolder(self,path,name):
         chk()
         try:
-            os.mkdir(origin(path)+'/'+name)
+            os.mkdir(origin(path)+'/'+origin(name))
         except Exception as e:
             return err(e)
         else:
@@ -157,7 +168,7 @@ class shile:
     def prev(self,path):
         chk()
         try:
-            f=open(origin(origin(path)))
+            f=open(origin(path),'rb')
             txt=f.read()
             f.close()
             cherrypy.response.headers['Content-Type'] = 'text/plain'

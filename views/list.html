@@ -2,7 +2,19 @@
     import  os
     import mimetypes
     def urllike(name):
-        return name.replace('/','>')
+        out=''
+        for a in name:
+            out+=hex(ord(a))[2:]
+        return out
+    def origin(name):
+        out=''
+        try:
+            for now in range(0,len(name),2):
+                out+=chr(int(name[now:now+2],16))
+        except:
+            pass
+        else:
+            return out
 %>
 
 <html>
@@ -13,13 +25,16 @@
     <script src="/js/jquery.js"></script>
     <script src="/js/bootstrap.min.js"></script>
     <!--[if lt IE 9]>
-      <script src="https://oss.maxcdn.com/html5shiv/3.7.2/html5shiv.min.js"></script>
-      <script src="https://oss.maxcdn.com/respond/1.4.2/respond.min.js"></script>
+        <script src="https://oss.maxcdn.com/html5shiv/3.7.2/html5shiv.min.js"></script>
+        <script src="https://oss.maxcdn.com/respond/1.4.2/respond.min.js"></script>
     <![endif]-->
     <title>Shile</title>
     <script>
-        function escape(s) {
-            return s.replace(/[<>&"]/g,function(c){return {'<':'&lt;','>':'&gt;','&':'&amp;','"':'&quot;'}[c];});
+        function urllike(name) {
+            var out=''
+            for(var now=0;now<name.length;now++)
+                out+=name.charCodeAt(now).toString(16)
+            return out
         }
         function cmdcallback(e,func) {
             var keynum
@@ -31,35 +46,32 @@
         }
         function cmd() {
             cmdtext=document.getElementById('cmd-text').value
-            var cmdhex=''
-            for(var now=0;now<cmdtext.length;now++)
-                cmdhex+=cmdtext.charCodeAt(now).toString(16)
-            document.getElementById('cmd-result').src='/cmd/'+cmdhex
+            document.getElementById('cmd-result').src='/cmd/'+urllike(cmdtext)
             document.getElementById('cmd-text').value=''
         }
         function redirect() {
-            window.location.assign('/view/'+document.getElementById('new_pathname').value.replace('\\','>').replace('/','>'))
+            window.location.assign('/view/'+urllike(document.getElementById('new_pathname').value))
         }
         function prev(name) {
-                window.open('/prev/${urllikes+">"}'+name)
+                window.open('/prev/${urllikes+"2f"}'+urllike(name))
         }
         function run(name) {
             if(confirm('确定在远端打开 '+name+' 吗？'))
-                window.location.assign('/run/${urllikes+">"}'+name)
+                window.location.assign('/run/${urllikes+"2f"}'+urllike(name))
         }
         function del(name) {
             if(confirm('确定删除 '+name+' 吗？'))
-                window.location.assign('/delete/${urllikes+">"}'+name)
+                window.location.assign('/delete/${urllikes+"2f"}'+urllike(name))
         }
         function ren(name) {
             newname=prompt('为 '+name+' 输入新的文件名：')
             if(newname!=''&&newname!=null)
-                window.location.assign('/rename/${urllikes}/'+name+'/'+newname)
+                window.location.assign('/rename/${urllikes}/'+urllike(name)+'/'+urllike(newname))
         }
         function newfolder() {
             n=prompt('新目录名：')
             if(n!=''&&n!=null)
-                window.location.assign('/newfolder/${urllikes}/'+n)
+                window.location.assign('/newfolder/${urllikes}/'+urllike(n))
         }
     </script>
 </head>
@@ -73,7 +85,7 @@
         <button type="button" class="btn btn-default navbar-btn" onclick="window.location.assign('/logout')">注销</button>
         <div class="navbar-form navbar-right" style="margin-right: 0px">
             <div class="form-group">
-                <input id="new_pathname" type="text" value="${origins}" class="form-control" onkeypress="cmdcallback(event,redirect)" style="width: 400px" placeholder="目录名">
+                <input id="new_pathname" type="text" value="${origins}" class="form-control" autocomplete="on" onkeypress="cmdcallback(event,redirect)" style="width: 400px" placeholder="目录名">
             </div>
             <button type="button" onclick="redirect()" class="btn btn-primary">进入</button>
         </div>
@@ -83,11 +95,11 @@
             <%
                 paths=origins.split('/')
                 for a in range(len(paths)):
-                    paths[a]=paths[a]+'>'
+                    paths[a]=urllike(paths[a])+'2f'
             %>
             % for l in range(len(paths)):
                 <li><a href="/view/${''.join(paths[:l+1])}">
-                    ${paths[l][:-1]}
+                    ${origin(paths[l][:-2])}
                 </a></li>
             % endfor
         </ol>
@@ -103,7 +115,7 @@
         <tbody>
             % for f in files:
                 <tr>
-                    <td><a href="/view/${urllikes+'>'+f}">
+                    <td><a href="/view/${urllikes+'2f'+urllike(f)}">
                          % if os.path.isdir(origins+'/'+f):
                             <span class="glyphicon glyphicon-folder-open"></span>
                         % else:
@@ -123,7 +135,7 @@
                             <%
                                 ftype=mimetypes.guess_type(f)
                             %>
-                            % if type(ftype)==type((1,2)) and ftype[0]=='text/plain':
+                            % if type(ftype[0])==type('1') and ftype[0].find('text/')==0:
                                 <button class="btn-link" onclick="prev('${f}')">
                                     <span class="glyphicon glyphicon-align-left"></span>
                                 </button>
