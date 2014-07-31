@@ -1,3 +1,5 @@
+#coding=utf-8
+
 import cherrypy
 from cherrypy.lib.static import serve_file
 from mako.template import Template
