@@ -4,11 +4,11 @@ import cherrypy
 from cherrypy.lib.static import serve_file
 from mako.template import Template
 import os
-import hashlib
 import shutil
-import mimetypes
+from password_generator import encode_psw
 
 server_path=os.getcwd().replace('\\','/')
+home_path=server_path
 
 def origin(name):
     out=''
@@ -65,11 +65,9 @@ class shile:
         if not password:
             template=Template(filename=server_path+'/views/login.html',input_encoding='utf-8')
             return template.render()
-        psw=hashlib.sha256()
-        psw.update(password.encode())
-        truepsw=hashlib.sha256()
-        truepsw.update(open('pass.txt','rb').read())
-        if truepsw.hexdigest()!=psw.hexdigest():
+        with open('pass.txt') as f:
+            truepsw=f.read()
+        if truepsw!=encode_psw(password):
             raise cherrypy.HTTPRedirect('/login')
         else:
             cherrypy.session['login']=True
@@ -78,7 +76,7 @@ class shile:
     @cherrypy.expose
     def index(self):
         chk()
-        raise cherrypy.HTTPRedirect('/view/633a')
+        raise cherrypy.HTTPRedirect('/view/'+urllike(home_path))
 
     @cherrypy.expose
     def logout(self):
@@ -96,9 +94,11 @@ class shile:
         if path[-1]!='2f':
             path+='2f'
         try:
-            f=open(origin(path)+upfile.filename,'wb')
-            f.write(upfile.file.read())
-            f.close()
+            with open(origin(path)+upfile.filename,'wb') as f:
+                nowprog=-1
+                while upfile.file.tell()!=nowprog:
+                    nowprog=upfile.file.tell()
+                    f.write(upfile.file.read(65536))
         except Exception as e:
             return err(e)
         else:
@@ -115,10 +115,7 @@ class shile:
         except Exception as e:
             return err(e)
         else:
-            uriback=''
-            for a in origin(path).split('/')[:-1]:
-                    uriback+=(a+'/')
-            raise cherrypy.HTTPRedirect('/view/'+urllike(uriback))
+            raise cherrypy.HTTPRedirect('/view/'+urllike(os.path.split(origin(path))[0]))
 
     @cherrypy.expose
     def rename(self,path,old,new):
@@ -141,19 +138,6 @@ class shile:
             raise cherrypy.HTTPRedirect('/view/'+path)
 
     @cherrypy.expose
-    def run(self,path):
-        chk()
-        try:
-            os.startfile((origin(path)))
-        except Exception as e:
-            return err(e)
-        else:
-            uriback=''
-            for a in origin(path).split('/')[:-1]:
-                    uriback+=(a+'/')
-            raise cherrypy.HTTPRedirect('/view/'+urllike(uriback))
-
-    @cherrypy.expose
     def cmd(self,cmdhex):
         chk()
         cmdin=''
@@ -170,13 +154,20 @@ class shile:
     def prev(self,path):
         chk()
         try:
-            f=open(origin(path),'rb')
-            txt=f.read()
-            f.close()
+            with open(origin(path),'rb') as f:
+                txt=f.read()
             cherrypy.response.headers['Content-Type'] = 'text/plain'
             return txt
         except Exception as e:
             return err(e)
 
-
+    @cherrypy.expose
+    def newfile(self,path,filename,text):
+        try:
+            with open(origin(path)+'/'+filename,'w') as f:
+                f.write(text)
+        except Exception as e:
+            return err(e)
+        else:
+            raise cherrypy.HTTPRedirect('/view/'+path)
 cherrypy.quickstart(shile(),'','app.conf')

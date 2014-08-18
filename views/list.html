@@ -55,10 +55,6 @@
         function prev(name) {
                 window.open('/prev/${urllikes+"2f"}'+urllike(name))
         }
-        function run(name) {
-            if(confirm('确定在远端打开 '+name+' 吗？'))
-                window.location.assign('/run/${urllikes+"2f"}'+urllike(name))
-        }
         function del(name) {
             if(confirm('确定删除 '+name+' 吗？'))
                 window.location.assign('/delete/${urllikes+"2f"}'+urllike(name))
@@ -127,7 +123,12 @@
                         % if os.path.isdir(origins+'/'+f):
                             目录
                         % else:
-                            ${'%.1f'%(os.path.getsize(origins+'/'+f)/1024)} KB
+                            <%
+                                s=os.path.getsize(origins+'/'+f)
+                            %>
+                            ${s//1000000}M&nbsp;
+                            ${s//1000%1000}K&nbsp;
+                            ${s%1000}B
                         % endif
                     </td>
                     <td style="text-align: right">
@@ -140,9 +141,6 @@
                                     <span class="glyphicon glyphicon-align-left"></span>
                                 </button>
                             % endif
-                            <button class="btn-link" onclick="run('${f}')">
-                                <span class="glyphicon glyphicon-play"></span>
-                            </button>
                         % endif
                         <button class="btn-link" onclick="del('${f}')">
                             <span class="glyphicon glyphicon-trash"></span>
@@ -167,12 +165,18 @@
             <span class="glyphicon glyphicon-folder-open"></span>
             &nbsp;新建目录
         </button>
-        <button class="btn btn-primary" data-toggle="modal" data-target="#upload-modal" style="width: 75%;" role="button">
+        <button class="btn btn-success" data-toggle="modal" data-target="#newfile-modal" style="width:25%" role="button">
+            <span class="glyphicon glyphicon-pencil"></span>
+            &nbsp;新建文件
+        </button>
+        <button class="btn btn-primary" data-toggle="modal" data-target="#upload-modal" style="width: 50%;" role="button">
             <span class="glyphicon glyphicon-cloud-upload"></span>
             &nbsp;上传文件
         </button>
     </div>
     <br />
+    <!-- modals -->
+    <!-- upload file -->
     <div class="modal fade" id="upload-modal">
         <div class="modal-dialog">
             <div class="modal-content">
@@ -195,6 +199,7 @@
             </div>
         </div>
     </div>
+    <!-- remote cmd -->
     <div class="modal fade" id="cmd-modal">
         <div class="modal-dialog">
             <div class="modal-content">
@@ -210,10 +215,37 @@
                             <button class="btn btn-primary" onclick="cmd()" type="button">执行</button>
                         </span>
                     </div>
+                    <iframe id="cmd-result" style="width: 100%;height: 350px" frameborder="0"
+                             src="/cmd/${urllike('echo Welcome to Shile')}"></iframe>
                 </div>
-                <iframe id="cmd-result" style="width: 100%;height: 350px" frameborder="0" src="/cmd/68656c70"></iframe>
             </div>
         </div>
     </div>
+    <!-- new file -->
+    <div class="modal fade" id="newfile-modal">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <button type="button" class="close" data-dismiss="modal"><span aria-hidden="true">&times;</span><span class="sr-only">Close</span></button>
+                    <h4 class="modal-title">新建文件</h4>
+                </div>
+                <div class="modal-body">
+                    <form action="/newfile" method="post">
+                        <input type="hidden" name="path" value="${urllikes}">
+                        <div class="input-group">
+                            <span class="input-group-addon"><span class="glyphicon glyphicon-file"></span></span>
+                            <input type="text" name="filename" class="form-control" placeholder="文件名">
+                            <span class="input-group-btn">
+                                <button class="btn btn-primary" type="submit">保存</button>
+                            </span>
+                        </div>
+                        <br />
+                        <textarea name="text" style="width: 100%; height:300px;"></textarea>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+    <!-- modal end -->
 </div></body>
 </html>
