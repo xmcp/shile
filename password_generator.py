@@ -1,3 +1,4 @@
+#coding=utf-8
 import hashlib
 def encode_psw(pswin):
     psw1=hashlib.sha224()
