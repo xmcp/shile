@@ -1,8 +1,6 @@
 #coding=utf-8
 
-from __future__ import unicode_literals
 from __future__ import division
-from __future__ import print_function
 
 import cherrypy
 from cherrypy.lib.static import serve_file
@@ -174,4 +172,6 @@ class shile:
             return err(e)
         else:
             raise cherrypy.HTTPRedirect('/view/'+path)
+
+cherrypy.config.update({'tools.staticdir.root':server_path+'/public'})
 cherrypy.quickstart(shile(),'','app.conf')
