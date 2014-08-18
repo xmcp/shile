@@ -11,4 +11,4 @@ def encode_psw(pswin):
     return psw1.hexdigest()[0:8]+psw2.hexdigest()[8:16]+psw3.hexdigest()[16:24]+psw4.hexdigest()[24:32]
 
 if __name__=='__main__':
-    print(encode_psw(input()))
+    print('生成的hash是:'+encode_psw(input('输入明文:')))
