@@ -1,6 +1,5 @@
 <%!
     import  os
-    import mimetypes
     def urllike(name):
         out=''
         for a in name:
@@ -133,14 +132,9 @@
                     </td>
                     <td style="text-align: right">
                         % if os.path.isfile(origins+'/'+f):
-                            <%
-                                ftype=mimetypes.guess_type(f)
-                            %>
-                            % if type(ftype[0])==type('1') and ftype[0].find('text/')==0:
-                                <button class="btn-link" onclick="prev('${f}')">
-                                    <span class="glyphicon glyphicon-align-left"></span>
-                                </button>
-                            % endif
+                            <button class="btn-link" onclick="prev('${f}')">
+                                <span class="glyphicon glyphicon-eye-open"></span>
+                            </button>
                         % endif
                         <button class="btn-link" onclick="del('${f}')">
                             <span class="glyphicon glyphicon-trash"></span>

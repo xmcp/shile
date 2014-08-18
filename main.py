@@ -10,7 +10,7 @@ import shutil
 from password_generator import encode_psw
 
 server_path=os.getcwd().replace('\\','/')
-home_path=server_path
+home_path='/home/shile/doc' if os.path.exists('/home/shile/doc') else server_path
 
 def origin(name):
     out=''
