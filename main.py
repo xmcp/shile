@@ -10,6 +10,7 @@ import time
 import shutil
 from password_generator import encode_psw
 
+ver='v7.3'
 server_path=os.getcwd().replace('\\','/')
 home_path='/home/shile/doc' if os.path.exists('/home/shile/doc') else server_path
 
@@ -71,7 +72,7 @@ class shile:
     def login(self,username=None,password=None):
         if not password or not username:
             template=Template(filename=server_path+'/views/login.html',input_encoding='utf-8')
-            return template.render()
+            return template.render(ver=ver)
         enusername=encode_psw(username)
         enpassword=encode_psw(password)
         for a in passs:
@@ -194,7 +195,7 @@ with open('pass.txt') as f:
     for a in f.readlines():
         passs.append((a.split(' ')[0],a.split(' ')[1].strip()))
 
-log=open('log.txt','w')
+log=open('log.txt','a')
 cherrypy.config.update({'tools.staticdir.root':server_path+'/public'})
 l('Server start')
 cherrypy.quickstart(shile(),'','app.conf')
