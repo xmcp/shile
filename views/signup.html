@@ -2,7 +2,7 @@
 <html>
 <head lang="zh">
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no">
     <link href="http://libs.useso.com/js/bootstrap/3.2.0/css/bootstrap.min.css" rel="stylesheet">
     <script src="http://libs.useso.com/js/jquery/2.1.1/jquery.min.js"></script>
     <script src="http://libs.useso.com/js/bootstrap/3.2.0/js/bootstrap.min.js"></script>
@@ -29,13 +29,13 @@
     </script>
 </head>
 <body style="background-color: #DDD"><div class="container">
-    <br />
+    <br /><br /><br />
     <div class="col-sm-3"></div>
     <div class="col-sm-6">
-        <div class="panel panel-primary" style="padding: 0px !important;">
+        <div class="panel panel-default" style="padding: 0px !important;">
             <div class="panel-heading">
-                <small class="pull-right"><a style="color: #FFF" href="/login">登录</a></small>
-                <h3 class="panel-title">注册账户</h3>
+                <small class="pull-right"><a href="/login">登录</a></small>
+                <h3 class="panel-title"><b>Sign up</b></h3>
             </div>
             <div class="panel-body">
                 <div class="input-group">
@@ -54,7 +54,7 @@
                         <a href="#" data-toggle="modal" data-target="#term-modal">使用条款</a>
                     </span>
                     <span class="input-group-btn">
-                        <button class="btn btn-primary" onclick="submit()">注册</button>
+                        <button class="btn btn-primary" id="submit-display-btn" onclick="submit()">注册</button>
                     </span>
                 </div>
                 <form action="/signup" method="post">
@@ -64,21 +64,20 @@
                 </form>
             </div>
         </div>
-        <div class="well well-sm">
-            % if result:
-                <div>
-                    <p>您得到了一个hash：</p>
-                    <pre>${userhash}-${passhash}</pre>
-                    <p>为了确定您有权利访问此服务器，请您将此hash手动添加到服务器上的：</p>
-                    <p>${serverpath}/pass.txt</p>
-                    <p>或者让@肖某帮你添加。</p>
-                    <p>然后点击<a href="/reloadpass">此处</a>让服务器重新加载pass.txt。</p>
-                    <p>谢谢您的配合！</p>
-                </div>
-            % else:
-                <span>illumer保留最终权利</span>
-            % endif
-        </div>
+        % if result:
+            <script>
+                document.getElementById('submit-display-btn').setAttribute('disabled','disabled')
+            </script>
+            <div class="well well-sm">
+                <p>您得到了一个对应您的用户名和密码的hash：</p>
+                <pre>${userhash}-${passhash}</pre>
+                <p>为了确定您有权利访问此服务器，请您将此hash手动添加到服务器上的：</p>
+                <p>${serverpath}/pass.txt</p>
+                <p>或者让&nbsp;@肖某&nbsp;等有访问权限的用户帮助您。</p>
+                <p>添加完毕后请点击<a href="/reloadpass">此处</a>让服务器重新加载pass.txt。</p>
+                <p>谢谢您的配合！</p>
+            </div>
+        % endif
     </div>
     <div class="modal fade" id="term-modal">
         <div class="modal-dialog">

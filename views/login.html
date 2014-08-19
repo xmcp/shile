@@ -2,7 +2,7 @@
 <html>
 <head lang="zh">
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no">
     <link href="http://libs.useso.com/js/bootstrap/3.2.0/css/bootstrap.min.css" rel="stylesheet">
     <script src="http://libs.useso.com/js/jquery/2.1.1/jquery.min.js"></script>
     <script src="http://libs.useso.com/js/bootstrap/3.2.0/js/bootstrap.min.js"></script>
@@ -12,43 +12,42 @@
     <![endif]-->
     <title>Shile</title>
 </head>
-<body style="background-color: #BBB"><div class="container">
-    <br />
+<body style="background-color: #DDD"><div class="container">
+    <br /><br /><br />
     <div class="col-sm-3"></div>
-    <div class="panel panel-primary col-sm-6" style="padding: 0px !important;">
-        <div class="panel-heading">
-            <small class="pull-right">${ver}</small>
-            <h3 class="panel-title">Welcome to Shile</h3>
+    <div class="col-sm-6">
+        <div class="panel panel-default" style="padding: 0px !important;">
+            <div class="panel-heading">
+                <small class="pull-right">by <a href="http://github.com/xmcp">xmcp</a></small>
+                <h3 class="panel-title"><b>Shile</b></h3>
+            </div>
+            <div class="panel-body">
+                <form action="/login" method="post">
+                    <div class="input-group">
+                        <span class="input-group-addon"><span class="glyphicon glyphicon-user"></span></span>
+                        <input autofocus="autofocus" type="password" name="username" placeholder="用户名" class="form-control">
+                    </div>
+                    <br />
+                    <div class="input-group">
+                        <span class="input-group-addon"><span class="glyphicon glyphicon-tree-conifer"></span></span>
+                        <input type="password" name="password" placeholder="密码" class="form-control">
+                    </div>
+                    <br />
+                    <div class="input-group">
+                        <input class="form-control" type="text" disabled="disabled"
+                               value="我承诺不乱搞此服务器，也不会为他人或程序乱搞服务器提供便利。">
+                        <span class="input-group-btn">
+                            <button class="btn btn-primary" type="submit"><span class="glyphicon glyphicon-ok"></span></button>
+                        </span>
+                    </div>
+                </form>
+            </div>
         </div>
-        <div class="panel-body">
-            <form action="/login" method="post">
-                <div class="input-group">
-                    <span class="input-group-addon"><span class="glyphicon glyphicon-user"></span></span>
-                    <input autofocus="autofocus" type="password" name="username" placeholder="用户名" class="form-control">
-                </div>
-                <br />
-                <div class="input-group">
-                    <span class="input-group-addon"><span class="glyphicon glyphicon-tree-conifer"></span></span>
-                    <input type="password" name="password" placeholder="密码" class="form-control">
-                </div>
-                <br />
-                <div class="input-group">
-                    <input class="form-control" type="text" disabled="disabled"
-                           value="我承诺不乱搞此服务器，也不会为他人或程序乱搞服务器提供便利。">
-                    <span class="input-group-btn">
-                        <button class="btn btn-primary" type="submit">登录</button>
-                    </span>
-                </div>
-            </form>
-        </div>
-        <div class="panel-footer">
-            <span class="pull-right">
-                <a href="http://github.com/xmcp/shile">Shile</a>
-                by&nbsp;<a href="http://github.com/xmcp">xmcp</a>
-            </span>
+        <br />
+        <div style="margin-left: 10px; margin-right: 10px;">
             <a href="/signup">注册</a>
             &nbsp;
-            <small>
+            <small class="pull-right">
                 最近活动时间：${last}
             </small>
         </div>

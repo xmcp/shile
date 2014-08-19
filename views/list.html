@@ -19,7 +19,7 @@
 <html>
 <head lang="zh">
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no">
     <link href="http://libs.useso.com/js/bootstrap/3.2.0/css/bootstrap.min.css" rel="stylesheet">
     <script src="http://libs.useso.com/js/jquery/2.1.1/jquery.min.js"></script>
     <script src="http://libs.useso.com/js/bootstrap/3.2.0/js/bootstrap.min.js"></script>
@@ -46,8 +46,8 @@
         function redirect() {
             window.location.assign('/view/'+urllike(document.getElementById('new_pathname').value))
         }
-        function prev(name) {
-                window.open('/prev/${urllikes+"2f"}'+urllike(name))
+        function down(name) {
+                window.open('/down/${urllikes+"2f"}'+urllike(name))
         }
         function del(name) {
             if(confirm('确定删除 '+name+' 吗？'))
@@ -81,16 +81,20 @@
     </div>
     <div class="page-header"><h3>
         <ol class="breadcrumb">
-            <%
-                paths=origins.split('/')
-                for a in range(len(paths)):
-                    paths[a]=urllike(paths[a])+'2f'
-            %>
-            % for l in range(len(paths)):
-                <li><a href="/view/${''.join(paths[:l+1])}">
-                    ${origin(paths[l][:-2])}
-                </a></li>
-            % endfor
+            % if len(origins)==0:
+                <li></li><li></li>
+            % else:
+                <%
+                    paths=origins.split('/')
+                    for a in range(len(paths)):
+                        paths[a]=urllike(paths[a])+'2f'
+                %>
+                % for l in range(len(paths)):
+                    <li>
+                        <a href="/view/${''.join(paths[:l+1])}">${origin(paths[l][:-2])}</a>
+                    </li>
+                % endfor
+            % endif
         </ol>
     </h3></div>
     <table class="table table-hover">
@@ -126,8 +130,8 @@
                     </td>
                     <td style="text-align: right">
                         % if os.path.isfile(origins+'/'+f):
-                            <button class="btn-link" onclick="prev('${f}')">
-                                <span class="glyphicon glyphicon-eye-open"></span>
+                            <button class="btn-link" onclick="down('${f}')">
+                                <span class="glyphicon glyphicon-save"></span>
                             </button>
                         % endif
                         <button class="btn-link" onclick="del('${f}')">

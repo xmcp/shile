@@ -10,7 +10,6 @@ import time
 import shutil
 from password_generator import encode_psw
 
-ver='v8.0.01'
 server_path=os.getcwd().replace('\\','/')
 home_path='/home/shile/doc' if os.path.exists('/home/shile/doc') else server_path
 
@@ -31,11 +30,15 @@ def chk():
         raise cherrypy.HTTPRedirect('/login')
 def err(s):
     try:
+        if 'username' in cherrypy.session.keys():
+            l('[%s]Error: %s'%(cherrypy.session['username'],str(s)))
+        else:
+            l('Error: %s'%str(s))
         template=Template(filename=server_path+'/views/err.html',input_encoding='utf-8')
         return template.render(err=s)
     except Exception as e:
         cherrypy.response.headers['Content-Type'] = 'text/plain'
-        return '在处理您的请求时，出现了一个错误导致无法继续：\n\n'+s+'\n\n在处理该错误时，出现了另一个致命错误：\n\n'+e+'\n\nShile'
+        return '在处理您的请求时，出现了一个错误导致无法继续：\n\n'+str(s)+'\n\n在处理该错误时，出现了另一个错误导致无法继续= =\n\n'+str(e)+'\n\n[ Shile ]'
 def l(s):
     log.write('%s  %s\n'%(time.strftime('%Y-%m-%d %X',time.localtime()),s))
     global lastupdate
@@ -57,12 +60,11 @@ class shile:
         except Exception as e:
             return err(e)
         if os.path.isfile(origin(path)):
-            raise cherrypy.HTTPRedirect('/down/'+path)
+            raise cherrypy.HTTPRedirect('/prev/'+path+'/'+os.path.split(origin(path))[1])
         if path[-2:]!='2f':
             path+='2f'
         template=Template(filename=server_path+'/views/list.html',input_encoding='utf-8')
         try:
-            l('[%s]View directory: %s'%(cherrypy.session['username'],origin(path)))
             return template.render(origins=origin(path[:-2]),urllikes=path[:-2],files=os.listdir(origin(path)))
         except Exception as e:
             return err(e)
@@ -80,7 +82,7 @@ class shile:
     def login(self,username=None,password=None):
         if not password or not username:
             template=Template(filename=server_path+'/views/login.html',input_encoding='utf-8')
-            return template.render(ver=ver,last=lastupdate)
+            return template.render(last=lastupdate)
         enusername=encode_psw('UserName',username)
         enpassword=encode_psw('PassWord',password)
         for a in passs:
@@ -162,7 +164,7 @@ class shile:
             raise cherrypy.HTTPRedirect('/view/'+path)
 
     @cherrypy.expose
-    def prev(self,path):
+    def prev(self,path,filename):
         chk()
         try:
             with open(origin(path),'rb') as f:
