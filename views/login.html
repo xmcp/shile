@@ -3,51 +3,54 @@
 <head lang="zh">
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1">
-    <link href="/css/bootstrap.min.css" rel="stylesheet">
-    <script src="/js/jquery.js"></script>
-    <script src="/js/bootstrap.min.js"></script>
+    <link href="http://libs.useso.com/js/bootstrap/3.2.0/css/bootstrap.min.css" rel="stylesheet">
+    <script src="http://libs.useso.com/js/jquery/2.1.1/jquery.min.js"></script>
+    <script src="http://libs.useso.com/js/bootstrap/3.2.0/js/bootstrap.min.js"></script>
     <!--[if lt IE 9]>
         <script src="https://oss.maxcdn.com/html5shiv/3.7.2/html5shiv.min.js"></script>
         <script src="https://oss.maxcdn.com/respond/1.4.2/respond.min.js"></script>
     <![endif]-->
     <title>Shile</title>
 </head>
-<body><div class="container">
-    <div class="modal" style="display: block">
-        <div class="modal-dialog">
-            <div class="modal-content">
-                <div class="modal-header">
-                    <h4 class="modal-title">Welcome to Shile</h4>
+<body style="background-color: #BBB"><div class="container">
+    <br />
+    <div class="col-sm-3"></div>
+    <div class="panel panel-primary col-sm-6" style="padding: 0px !important;">
+        <div class="panel-heading">
+            <small class="pull-right">${ver}</small>
+            <h3 class="panel-title">Welcome to Shile</h3>
+        </div>
+        <div class="panel-body">
+            <form action="/login" method="post">
+                <div class="input-group">
+                    <span class="input-group-addon"><span class="glyphicon glyphicon-user"></span></span>
+                    <input autofocus="autofocus" type="password" name="username" placeholder="用户名" class="form-control">
                 </div>
-                <div class="modal-body">
-                    <form action="/login" method="post">
-                        <div class="input-group">
-                            <span class="input-group-addon"><span class="glyphicon glyphicon-user"></span></span>
-                            <input autofocus="autofocus" type="password" name="username" placeholder="用户名" class="form-control">
-                        </div>
-                        <br />
-                        <div class="input-group">
-                            <span class="input-group-addon"><span class="glyphicon glyphicon-tree-conifer"></span></span>
-                            <input type="password" name="password" placeholder="密码" class="form-control">
-                        </div>
-                        <br />
-                        <div class="input-group">
-                            <input class="form-control" type="text" disabled="disabled"
-                                   value="我不会乱搞illumer服务器，也不会为其它人或程序乱搞服务器提供便利。">
-                            <span class="input-group-btn">
-                                <button class="btn btn-primary" type="submit">登录</button>
-                            </span>
-                        </div>
-                    </form>
+                <br />
+                <div class="input-group">
+                    <span class="input-group-addon"><span class="glyphicon glyphicon-tree-conifer"></span></span>
+                    <input type="password" name="password" placeholder="密码" class="form-control">
                 </div>
-                <div class="modal-footer">
-                    <a href="http://github.com/xmcp/shile">Shile</a>
-                    by
-                    <a href="http://github.com/xmcp">xmcp</a>
-                    &nbsp;-&nbsp;
-                    ${ver}
+                <br />
+                <div class="input-group">
+                    <input class="form-control" type="text" disabled="disabled"
+                           value="我承诺不乱搞此服务器，也不会为他人或程序乱搞服务器提供便利。">
+                    <span class="input-group-btn">
+                        <button class="btn btn-primary" type="submit">登录</button>
+                    </span>
                 </div>
-            </div>
+            </form>
+        </div>
+        <div class="panel-footer">
+            <span class="pull-right">
+                <a href="http://github.com/xmcp/shile">Shile</a>
+                by&nbsp;<a href="http://github.com/xmcp">xmcp</a>
+            </span>
+            <a href="/signup">注册</a>
+            &nbsp;
+            <small>
+                最近活动时间：${last}
+            </small>
         </div>
     </div>
 </div></body>

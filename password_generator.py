@@ -1,6 +1,7 @@
 #coding=utf-8
 import hashlib
-def encode_psw(pswin):
+def encode_psw(prefix,pswin):
+    pswin=prefix+pswin
     psw1=hashlib.sha224()
     psw1.update(pswin.encode())
     psw2=hashlib.sha256()
@@ -12,4 +13,4 @@ def encode_psw(pswin):
     return psw1.hexdigest()[0:8]+psw2.hexdigest()[8:16]+psw3.hexdigest()[16:24]+psw4.hexdigest()[24:32]
 
 if __name__=='__main__':
-    print('生成的hash是:'+encode_psw(input('输入明文:')))
+    print(encode_psw(input(),input()))

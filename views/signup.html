@@ -1,0 +1,109 @@
+<!DOCTYPE html>
+<html>
+<head lang="zh">
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <link href="http://libs.useso.com/js/bootstrap/3.2.0/css/bootstrap.min.css" rel="stylesheet">
+    <script src="http://libs.useso.com/js/jquery/2.1.1/jquery.min.js"></script>
+    <script src="http://libs.useso.com/js/bootstrap/3.2.0/js/bootstrap.min.js"></script>
+    <!--[if lt IE 9]>
+        <script src="https://oss.maxcdn.com/html5shiv/3.7.2/html5shiv.min.js"></script>
+        <script src="https://oss.maxcdn.com/respond/1.4.2/respond.min.js"></script>
+    <![endif]-->
+    <title>Shile</title>
+    <script>
+        iknow=false
+        function submit() {
+            if(!iknow) alert('不，您没有阅读使用条款。')
+            else {
+                document.getElementById('true-username').value=document.getElementById('username').value
+                document.getElementById('true-password').value=document.getElementById('password').value
+                document.getElementById('submit-btn').click()
+            }
+        }
+        function iknowit() {
+            iknow=true
+            document.getElementById('iknow-btn').innerHTML='✓&nbsp;我同意'
+            document.getElementById('iknow-btn').setAttribute('disabled','disabled')
+        }
+    </script>
+</head>
+<body style="background-color: #DDD"><div class="container">
+    <br />
+    <div class="col-sm-3"></div>
+    <div class="col-sm-6">
+        <div class="panel panel-primary" style="padding: 0px !important;">
+            <div class="panel-heading">
+                <small class="pull-right"><a style="color: #FFF" href="/login">登录</a></small>
+                <h3 class="panel-title">注册账户</h3>
+            </div>
+            <div class="panel-body">
+                <div class="input-group">
+                    <span class="input-group-addon"><span class="glyphicon glyphicon-user"></span></span>
+                    <input value="${username}" type="text" id="username" placeholder="用户名" class="form-control">
+                </div>
+                <br />
+                <div class="input-group">
+                    <span class="input-group-addon"><span class="glyphicon glyphicon-tree-conifer"></span></span>
+                    <input value="${password}" type="password" id="password" placeholder="密码" class="form-control">
+                </div>
+                <br />
+                <div class="input-group">
+                    <span class="form-control">
+                        我已经阅读并同意
+                        <a href="#" data-toggle="modal" data-target="#term-modal">使用条款</a>
+                    </span>
+                    <span class="input-group-btn">
+                        <button class="btn btn-primary" onclick="submit()">注册</button>
+                    </span>
+                </div>
+                <form action="/signup" method="post">
+                    <input type="hidden" name="username" id="true-username">
+                    <input type="hidden" name="password" id="true-password">
+                    <button type="submit" id="submit-btn" style="display: none">这个才是注册</button>
+                </form>
+            </div>
+        </div>
+        <div class="well well-sm">
+            % if result:
+                <div>
+                    <p>您得到了一个hash：</p>
+                    <pre>${userhash}-${passhash}</pre>
+                    <p>为了确定您有权利访问此服务器，请您将此hash手动添加到服务器上的：</p>
+                    <p>${serverpath}/pass.txt</p>
+                    <p>然后点击<a href="/reloadpass">此处</a>让服务器重新加载pass.txt。</p>
+                    <p>谢谢您的配合！</p>
+                </div>
+            % else:
+                <span>illumer保留最终权利</span>
+            % endif
+        </div>
+    </div>
+    <div class="modal fade" id="term-modal">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <button type="button" class="close" data-dismiss="modal"><span aria-hidden="true">&times;</span><span class="sr-only">Close</span></button>
+                    <h4 class="modal-title">使用条款</h4>
+                </div>
+                <div class="modal-body">
+                    <li>您使用本系统（Shile）意味着您同意此条款的全部内容。</li>
+                    <li>您不能通过本系统破坏此服务器上他人或集体的文件资料。</li>
+                    <li>您不在本系统中尝试使用扫描器等可能破坏数据完整性和可用性的软件。</li>
+                    <li>您不能修改、删除系统文件，除非您确定此操作无害并为其后果负责。</li>
+                    <li>您不能在未征得管理员同意的情况下修改或删除log.txt或pass.txt。</li>
+                    <li>您不能将密码告诉他人，否则一切后果由您承担。</li>
+                    <li>您不能在本系统中储存重要资料，如果数据丢失，本系统不负责。</li>
+                    <li>如果您通过日志发现他人篡改或毁坏您的数据，请与其联系。</li>
+                    <li>本条款可能随时更改而不通知您，@xmcp保留对此条款的所有权利。</li>
+                </div>
+                <div class="modal-footer">
+                    <button id="iknow-btn" class="btn btn-primary" onclick="iknowit()">
+                        我同意
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+</div></body>
+</html>

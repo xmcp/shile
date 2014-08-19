@@ -10,7 +10,7 @@ import time
 import shutil
 from password_generator import encode_psw
 
-ver='v7.3'
+ver='v8.0'
 server_path=os.getcwd().replace('\\','/')
 home_path='/home/shile/doc' if os.path.exists('/home/shile/doc') else server_path
 
@@ -38,7 +38,15 @@ def err(s):
         return '在处理您的请求时，出现了一个错误导致无法继续：\n\n'+s+'\n\n在处理该错误时，出现了另一个致命错误：\n\n'+e+'\n\nShile'
 def l(s):
     log.write('%s  %s\n'%(time.strftime('%Y-%m-%d %X',time.localtime()),s))
+    global lastupdate
+    lastupdate=time.strftime('%Y-%m-%d %X',time.localtime())
     log.flush()
+def loadpass():
+    global passs
+    passs=[]
+    with open('pass.txt') as f:
+        for a in f.readlines():
+            passs.append((a.split('-')[0],a.split('-')[1].strip()))
 class shile:
     @cherrypy.expose
     def view(self,path):
@@ -72,9 +80,9 @@ class shile:
     def login(self,username=None,password=None):
         if not password or not username:
             template=Template(filename=server_path+'/views/login.html',input_encoding='utf-8')
-            return template.render(ver=ver)
-        enusername=encode_psw(username)
-        enpassword=encode_psw(password)
+            return template.render(ver=ver,last=lastupdate)
+        enusername=encode_psw('UserName',username)
+        enpassword=encode_psw('PassWord',password)
         for a in passs:
             if a[0]==enusername and a[1]==enpassword:
                 cherrypy.session['login']=True
@@ -154,19 +162,6 @@ class shile:
             raise cherrypy.HTTPRedirect('/view/'+path)
 
     @cherrypy.expose
-    def cmd(self,cmdhex):
-        chk()
-        cmdin=''
-        cherrypy.response.headers['Content-Type'] = 'text/plain'
-        try:
-            cmdin=origin(cmdhex)
-            l('[%s]Execute command: %s'%(cherrypy.session['username'],cmdin))
-        except Exception as e:
-            return '命令处理错误：\n\n'+str(e)
-        out=os.popen(cmdin)
-        return '> '+str(cmdin)+'\n\n'+out.read()
-
-    @cherrypy.expose
     def prev(self,path):
         chk()
         try:
@@ -189,12 +184,24 @@ class shile:
         else:
             raise cherrypy.HTTPRedirect('/view/'+path)
 
-#read passwords
-passs=[]
-with open('pass.txt') as f:
-    for a in f.readlines():
-        passs.append((a.split(' ')[0],a.split(' ')[1].strip()))
+    @cherrypy.expose
+    def signup(self,username=None,password=None):
+        template=Template(filename=server_path+'/views/signup.html',input_encoding='utf-8')
+        if not username or not password:
+            return template.render(result=False,username='',password='')
+        enusername=encode_psw('UserName',username)
+        enpassword=encode_psw('PassWord',password)
+        l('[%s]Creat password hash'%username)
+        return template.render(result=True,userhash=enusername,passhash=enpassword,
+                               username=username,password=password,serverpath=server_path)
 
+    @cherrypy.expose
+    def reloadpass(self):
+        l('Reload password file')
+        loadpass()
+        raise cherrypy.HTTPRedirect('/login')
+
+loadpass()
 log=open('log.txt','a')
 cherrypy.config.update({'tools.staticdir.root':server_path+'/public'})
 l('Server start')
