@@ -10,7 +10,7 @@ import time
 import shutil
 from password_generator import encode_psw
 
-ver='v8.0'
+ver='v8.0.01'
 server_path=os.getcwd().replace('\\','/')
 home_path='/home/shile/doc' if os.path.exists('/home/shile/doc') else server_path
 
