@@ -96,8 +96,8 @@ class shile:
     @cherrypy.expose
     def index(self):
         chk()
-	if os.path.isdir('/home/'+cherrypy.session['username']):
-	    home_path='/home/'+cherrypy.session['username']
+	if os.path.isdir('/home/%s/doc'%cherrypy.session['username']):
+	    home_path='/home/%s/doc'%cherrypy.session['username']
 	else:
 	    home_path='/home/shile/doc'
         raise cherrypy.HTTPRedirect('/view/'+urllike(home_path))
