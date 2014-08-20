@@ -11,7 +11,6 @@ import shutil
 from password_generator import encode_psw
 
 server_path=os.getcwd().replace('\\','/')
-home_path='/home/shile/doc' if os.path.exists('/home/shile/doc') else server_path
 
 def origin(name):
     out=''
@@ -97,6 +96,10 @@ class shile:
     @cherrypy.expose
     def index(self):
         chk()
+	if os.path.isdir('/home/'+cherrypy.session['username']):
+	    home_path='/home/'+cherrypy.session['username']
+	else:
+	    home_path='/home/shile/doc'
         raise cherrypy.HTTPRedirect('/view/'+urllike(home_path))
 
     @cherrypy.expose
