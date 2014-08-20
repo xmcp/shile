@@ -203,6 +203,16 @@ class shile:
         loadpass()
         raise cherrypy.HTTPRedirect('/login')
 
+    @cherrypy.expose
+    def move(self,oldpath,file,newpath):
+        chk()
+        try:
+            shutil.move(origin(oldpath)+'/'+origin(file),origin(newpath))
+        except Exception as e:
+            return err(e)
+        else:
+            raise cherrypy.HTTPRedirect('/view/'+oldpath)
+
 loadpass()
 log=open('log.txt','a')
 cherrypy.config.update({'tools.staticdir.root':server_path+'/public'})

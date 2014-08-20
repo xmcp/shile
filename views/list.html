@@ -58,6 +58,11 @@
             if(newname!=''&&newname!=null)
                 window.location.assign('/rename/${urllikes}/'+urllike(name)+'/'+urllike(newname))
         }
+        function ren(name) {
+            newpath=prompt('将 '+name+' 移动到：')
+            if(newpath!=''&&newpath!=null)
+                window.location.assign('/move/${urllikes}/'+urllike(name)+'/'+urllike(newpath))
+        }
         function newfolder() {
             n=prompt('新目录名：')
             if(n!=''&&n!=null)
@@ -134,6 +139,9 @@
                                 <span class="glyphicon glyphicon-save"></span>
                             </button>
                         % endif
+                        <button class="btn-link" onclick="move('${f}')">
+                            <span class="glyphicon glyphicon-move"></span>
+                        </button>
                         <button class="btn-link" onclick="del('${f}')">
                             <span class="glyphicon glyphicon-trash"></span>
                         </button>
