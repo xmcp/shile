@@ -1,5 +1,7 @@
+<!DOCTYPE html>
 <%!
     import  os
+    import mimetypes
     def urllike(name):
         out=''
         for a in name:
@@ -15,7 +17,6 @@
         else:
             return out
 %>
-
 <html>
 <head lang="zh">
     <meta charset="UTF-8">
@@ -58,10 +59,11 @@
             if(newname!=''&&newname!=null)
                 window.location.assign('/rename/${urllikes}/'+urllike(name)+'/'+urllike(newname))
         }
-        function ren(name) {
+        function move(name) {
             newpath=prompt('将 '+name+' 移动到：')
-            if(newpath!=''&&newpath!=null)
+            if(newpath!=''&&newpath!=null) {
                 window.location.assign('/move/${urllikes}/'+urllike(name)+'/'+urllike(newpath))
+            }
         }
         function newfolder() {
             n=prompt('新目录名：')
@@ -105,7 +107,8 @@
     <table class="table table-hover">
         <thead>
             <tr>
-                <th style="">文件名</th>
+                <th>文件名</th>
+                <th style="text-align: right">类型</th>
                 <th style="text-align: right">大小</th>
                 <th style="text-align: right">操作</th>
             </tr>
@@ -117,14 +120,18 @@
                          % if os.path.isdir(origins+'/'+f):
                             <span class="glyphicon glyphicon-folder-open"></span>
                         % else:
-                            <span class="glyphicon glyphicon-file"></span>
+                            <span class="glyphicon glyphicon-file" style="color: #474"></span>
                         % endif
                         &nbsp;${f}
                     </a></td>
                     <td style="text-align: right">
-                        % if os.path.isdir(origins+'/'+f):
-                            目录
-                        % else:
+                        % if os.path.isfile(origins+'/'+f):
+                            <% mime=mimetypes.guess_type(f)[0] %>
+                            ${mime if mime else '未知'}
+                        % endif
+                    </td>
+                    <td style="text-align: right">
+                        % if os.path.isfile(origins+'/'+f):
                             <%
                                 s=os.path.getsize(origins+'/'+f)
                             %>
@@ -135,19 +142,22 @@
                     </td>
                     <td style="text-align: right">
                         % if os.path.isfile(origins+'/'+f):
-                            <button class="btn-link" onclick="down('${f}')">
+                            <a href="#" onclick="down('${f}')">
                                 <span class="glyphicon glyphicon-save"></span>
-                            </button>
+                            </a>&nbsp;
+                            <a href="/compose/${urllikes+urllike('/'+f)}" target="_blank">
+                                <span class="glyphicon glyphicon-edit"></span>
+                            </a>&nbsp;
                         % endif
-                        <button class="btn-link" onclick="move('${f}')">
+                        <a href="#" onclick="move('${f}')">
                             <span class="glyphicon glyphicon-move"></span>
-                        </button>
-                        <button class="btn-link" onclick="del('${f}')">
+                        </a>&nbsp;
+                        <a href="#" onclick="del('${f}')">
                             <span class="glyphicon glyphicon-trash"></span>
-                        </button>
-                        <button class="btn-link" onclick="ren('${f}')">
+                        </a>&nbsp;
+                        <a href="#" onclick="ren('${f}')">
                             <span class="glyphicon glyphicon-pencil"></span>
-                        </button>
+                        </a>
                     </td>
                 </tr>
             % endfor

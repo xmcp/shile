@@ -47,8 +47,9 @@ def loadpass():
     global passs
     passs=[]
     with open('pass.txt') as f:
-        for a in f.readlines():
-            passs.append((a.split('-')[0],a.split('-')[1].strip()))
+        for a in f.readlines() :
+            if a:
+                passs.append((a.split('-')[0],a.split('-')[1].strip()))
 class shile:
     @cherrypy.expose
     def view(self,path):
@@ -96,10 +97,12 @@ class shile:
     @cherrypy.expose
     def index(self):
         chk()
-	if os.path.isdir('/home/%s/doc'%cherrypy.session['username']):
-	    home_path='/home/%s/doc'%cherrypy.session['username']
-	else:
-	    home_path='/home/shile/doc'
+        if os.path.isdir('/home/%s/doc'%cherrypy.session['username']):
+            home_path='/home/%s/doc'%cherrypy.session['username']
+        elif os.path.isdir('/home/shile/doc'):
+            home_path='/home/shile/doc'
+        else:
+            home_path=server_path
         raise cherrypy.HTTPRedirect('/view/'+urllike(home_path))
 
     @cherrypy.expose
@@ -210,11 +213,34 @@ class shile:
     def move(self,oldpath,file,newpath):
         chk()
         try:
-            shutil.move(origin(oldpath)+'/'+origin(file),origin(newpath))
+            newpath=origin(newpath)
+            oldpath=origin(oldpath)
+            os.chdir(oldpath)
+            if newpath[-1] not in ('/','\\'):
+                newpath+='/'
+            l('[%s]Move file: %s/%s -> %s'%(cherrypy.session['username'],oldpath,origin(file),newpath))
+            shutil.move(oldpath+'/'+origin(file),newpath)
         except Exception as e:
             return err(e)
         else:
-            raise cherrypy.HTTPRedirect('/view/'+oldpath)
+            raise cherrypy.HTTPRedirect('/view/'+urllike(oldpath))
+        finally:
+            os.chdir(server_path)
+
+    @cherrypy.expose
+    def compose(self,filename,upload=None):
+        chk()
+        try:
+            if upload:
+                with open(origin(filename),'w') as f:
+                    f.writelines(upload.split('\n'))
+            with open(origin(filename),'r') as f:
+                txt=f.read()
+                template=Template(filename=server_path+'/views/compose.html',input_encoding='utf-8')
+                return template.render(origins=origin(filename),urllikes=filename,txt=txt)
+        except Exception as e:
+            return err(e)
+
 
 loadpass()
 log=open('log.txt','a')

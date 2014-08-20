@@ -16,15 +16,15 @@
         function submit() {
             if(!iknow) alert('不，您没有阅读使用条款。')
             else {
-                document.getElementById('true-username').value=document.getElementById('username').value
-                document.getElementById('true-password').value=document.getElementById('password').value
-                document.getElementById('submit-btn').click()
+                $('#true-username').val($('#username').val())
+                $('#true-password').val($('#password').val())
+                $('#submit-btn').click()
             }
         }
         function iknowit() {
             iknow=true
-            document.getElementById('iknow-btn').innerHTML='✓&nbsp;我同意'
-            document.getElementById('iknow-btn').setAttribute('disabled','disabled')
+            $('#iknow-btn').html('✓&nbsp;我同意')
+            $('#iknow-btn').attr('disabled','disabled')
         }
     </script>
 </head>
@@ -66,7 +66,7 @@
         </div>
         % if result:
             <script>
-                document.getElementById('submit-display-btn').setAttribute('disabled','disabled')
+                $('#submit-display-btn').attr('disabled','disabled')
             </script>
             <div class="well well-sm">
                 <p>您得到了一个对应您的用户名和密码的hash：</p>
