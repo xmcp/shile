@@ -236,18 +236,6 @@ class shile:
         except Exception as e:
             return err(e)
 
-    @cherrypy.expose
-    def news(self):
-        try:
-            with open('news.txt','r') as f:
-                return '''<div class="alert alert-warning">
-                            <span class="glyphicon glyphicon-comment"></span>
-                            &nbsp;%s
-                        </div>'''%f.read().encode('utf-8').decode()
-        except Exception as e:
-            return '新闻加载失败: '+str(e)
-
-
 loadpass()
 log=open('log.txt','a')
 cherrypy.config.update({'tools.staticdir.root':server_path+'/public'})

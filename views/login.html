@@ -11,9 +11,6 @@
         <script src="https://oss.maxcdn.com/respond/1.4.2/respond.min.js"></script>
     <![endif]-->
     <title>Shile</title>
-    <script>
-        $(document).ready(function(){$('#news-item').load('/news')})
-    </script>
 </head>
 <body style="background-color: #DDD"><div class="container">
     <br /><br /><br />
@@ -47,8 +44,10 @@
                 </form>
             </div>
         </div>
-
-        <div id="news-item"></div>
+        <div class="alert alert-warning">
+            <span class="glyphicon glyphicon-comment"></span>
+            &nbsp;Shile的密码算法已更新，之前生成的hash均已失效，请您重新注册。
+        </div>
         <br /><br />
         <div style="margin-left: 10px; margin-right: 10px;">
             <a href="/signup">注册</a>
