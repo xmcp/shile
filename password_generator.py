@@ -1,7 +1,6 @@
 #coding=utf-8
 import hashlib
-def encode_psw(prefix,pswin):
-    pswin=prefix+pswin
+def encode_raw(pswin):
     psw1=hashlib.sha224()
     psw1.update(pswin.encode())
     psw2=hashlib.sha256()
@@ -12,5 +11,8 @@ def encode_psw(prefix,pswin):
     psw4.update(pswin.swapcase().encode())
     return psw1.hexdigest()[0:8]+psw2.hexdigest()[8:16]+psw3.hexdigest()[16:24]+psw4.hexdigest()[24:32]
 
+def encode_psw(username,password):
+    return encode_raw('UnPw'+username+password)+'-'+encode_raw('PwUn'+password+username)
+
 if __name__=='__main__':
-    print(encode_psw(input(),input()))
+    print(encode_psw(input('Un:'),input('Pw:')))

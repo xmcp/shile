@@ -45,11 +45,8 @@ def l(s):
     log.flush()
 def loadpass():
     global passs
-    passs=[]
-    with open('pass.txt') as f:
-        for a in f.readlines() :
-            if a:
-                passs.append((a.split('-')[0],a.split('-')[1].strip()))
+    with open('pass.txt','r') as f:
+        passs=[a.strip() for a in f.readlines()]
 class shile:
     @cherrypy.expose
     def view(self,path):
@@ -81,15 +78,19 @@ class shile:
     @cherrypy.expose
     def login(self,username=None,password=None):
         if not password or not username:
+            try:
+                with open('news.txt','r') as f:
+                    news=f.read()
+            except Exception as e:
+                return err(e)
             template=Template(filename=server_path+'/views/login.html',input_encoding='utf-8')
-            return template.render(last=lastupdate)
-        enusername=encode_psw('UserName',username)
-        enpassword=encode_psw('PassWord',password)
+            return template.render(last=lastupdate,news=news)
+        inhash=encode_psw(username,password)
         for a in passs:
-            if a[0]==enusername and a[1]==enpassword:
+            if a==inhash:
                 cherrypy.session['login']=True
                 cherrypy.session['username']=username
-                l('[%s]Login successful'%username)
+                l('[%s]Login successful(%s...)'%(username,inhash[:8]))
                 raise cherrypy.HTTPRedirect('/')
         l('[%s]Login failed'%username)
         raise cherrypy.HTTPRedirect('/login')
@@ -197,10 +198,9 @@ class shile:
         template=Template(filename=server_path+'/views/signup.html',input_encoding='utf-8')
         if not username or not password:
             return template.render(result=False,username='',password='')
-        enusername=encode_psw('UserName',username)
-        enpassword=encode_psw('PassWord',password)
+        outhash=encode_psw(username,password)
         l('[%s]Creat password hash'%username)
-        return template.render(result=True,userhash=enusername,passhash=enpassword,
+        return template.render(result=True,hash=outhash,
                                username=username,password=password,serverpath=server_path)
 
     @cherrypy.expose

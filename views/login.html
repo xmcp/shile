@@ -34,8 +34,9 @@
                     </div>
                     <br />
                     <div class="input-group">
-                        <input class="form-control" type="text" disabled="disabled"
-                               value="我承诺不乱搞此服务器，也不会为他人或程序乱搞服务器提供便利。">
+                        <span class="form-control" disabled="disabled">
+                            我承诺不乱搞此服务器，也不会为他人或程序乱搞服务器提供便利。
+                        </span>
                         <span class="input-group-btn">
                             <button class="btn btn-primary" type="submit"><span class="glyphicon glyphicon-ok"></span></button>
                         </span>
@@ -43,7 +44,12 @@
                 </form>
             </div>
         </div>
-        <br />
+
+        <div class="alert alert-warning">
+            <span class="glyphicon glyphicon-comment"></span>
+            &nbsp;${news}
+        </div>
+        <br /><br />
         <div style="margin-left: 10px; margin-right: 10px;">
             <a href="/signup">注册</a>
             &nbsp;

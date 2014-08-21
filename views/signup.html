@@ -14,7 +14,7 @@
     <script>
         iknow=false
         function submit() {
-            if(!iknow) alert('不，您没有阅读使用条款。')
+            if(!iknow) alert('不，您没有同意使用条款。')
             else {
                 $('#true-username').val($('#username').val())
                 $('#true-password').val($('#password').val())
@@ -49,12 +49,14 @@
                 </div>
                 <br />
                 <div class="input-group">
-                    <span class="form-control">
+                    <span class="form-control" style="background-color: #EEE" disabled="disabled">
                         我已经阅读并同意
                         <a href="#" data-toggle="modal" data-target="#term-modal">使用条款</a>
                     </span>
                     <span class="input-group-btn">
-                        <button class="btn btn-primary" id="submit-display-btn" onclick="submit()">注册</button>
+                        <button class="btn btn-primary" id="submit-display-btn" onclick="submit()">
+                            <span class="glyphicon glyphicon-ok"></span>
+                        </button>
                     </span>
                 </div>
                 <form action="/signup" method="post">
@@ -69,8 +71,8 @@
                 $('#submit-display-btn').attr('disabled','disabled')
             </script>
             <div class="well well-sm">
-                <p>您得到了一个对应您的用户名和密码的hash：</p>
-                <pre>${userhash}-${passhash}</pre>
+                <p>恭喜您，您得到了一个对应您的用户名和密码的hash：</p>
+                <pre>${hash}</pre>
                 <p>为了确定您有权利访问此服务器，请您将此hash手动添加到服务器上的：</p>
                 <p>${serverpath}/pass.txt</p>
                 <p>或者让&nbsp;@肖某&nbsp;等有访问权限的用户帮助您。</p>

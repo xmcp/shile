@@ -77,7 +77,7 @@
         <button type="button" class="btn btn-default navbar-btn" onclick="window.location.assign('/logout')">注销</button>
         <div class="navbar-form navbar-right" style="margin-right: 0px">
             <div class="form-group">
-                <input id="new_pathname" type="text" value="${origins}" class="form-control" autocomplete="on" onkeypress="cmdcallback(event,redirect)" style="width: 400px" placeholder="目录名">
+                <input id="new_pathname" type="text" value="${origins}" class="form-control" autocomplete="on" onkeypress="cmdcallback(event,redirect)" style="width: 300px" placeholder="目录名">
             </div>
             <button type="button" onclick="redirect()" class="btn btn-primary">进入</button>
         </div>
@@ -121,7 +121,9 @@
                     <td style="text-align: right">
                         % if os.path.isfile(origins+'/'+f):
                             <% mime=mimetypes.guess_type(f)[0] %>
-                            ${mime if mime else '?'}
+                            ${mime if mime else 'Unknown'}
+                        % else:
+                            目录
                         % endif
                     </td>
                     <td style="text-align: right">
