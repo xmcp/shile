@@ -78,13 +78,8 @@ class shile:
     @cherrypy.expose
     def login(self,username=None,password=None):
         if not password or not username:
-            try:
-                with open('news.txt','r') as f:
-                    news=u'%s'%f.read()
-            except Exception as e:
-                return err(e)
             template=Template(filename=server_path+'/views/login.html',input_encoding='utf-8')
-            return template.render(last=lastupdate,news=news)
+            return template.render(last=lastupdate)
         inhash=encode_psw(username,password)
         for a in passs:
             if a==inhash:
@@ -240,6 +235,17 @@ class shile:
                 return template.render(origins=origin(filename),urllikes=filename,txt=txt)
         except Exception as e:
             return err(e)
+
+    @cherrypy.expose
+    def news(self):
+        try:
+            with open('news.txt','r') as f:
+                return '''<div class="alert alert-warning">
+                            <span class="glyphicon glyphicon-comment"></span>
+                            &nbsp;%s
+                        </div>'''%f.read()
+        except Exception as e:
+            return '新闻加载失败: '+str(e)
 
 
 loadpass()
