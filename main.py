@@ -243,7 +243,7 @@ class shile:
                 return '''<div class="alert alert-warning">
                             <span class="glyphicon glyphicon-comment"></span>
                             &nbsp;%s
-                        </div>'''%f.read()
+                        </div>'''%f.read().encode('utf-8').decode()
         except Exception as e:
             return '新闻加载失败: '+str(e)
 
