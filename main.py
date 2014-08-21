@@ -1,6 +1,7 @@
 #coding=utf-8
 
 from __future__ import division
+from __future__ import unicode_literals
 
 import cherrypy
 from cherrypy.lib.static import serve_file
