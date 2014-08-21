@@ -9,13 +9,9 @@
         return out
     def origin(name):
         out=''
-        try:
-            for now in range(0,len(name),2):
-                out+=chr(int(name[now:now+2],16))
-        except:
-            pass
-        else:
-            return out
+        for now in range(0,len(name),2):
+            out+=chr(int(name[now:now+2],16))
+        return out
 %>
 <html>
 <head lang="zh">
