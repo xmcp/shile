@@ -88,13 +88,11 @@
                 <li></li><li></li>
             % else:
                 <%
-                    paths=origins.split('/')
-                    for a in range(len(paths)):
-                        paths[a]=urllike(paths[a])+'2f'
+                    paths=[a+'/' for a in origins.split('/')]
                 %>
                 % for l in range(len(paths)):
                     <li>
-                        <a href="/view/${''.join(paths[:l+1])}">${origin(paths[l][:-2])}</a>
+                        <a href="/view/${urllike(''.join(paths[:l+1]))}">${paths[l][:-1]}</a>
                     </li>
                 % endfor
             % endif
