@@ -121,7 +121,7 @@
                     <td style="text-align: right">
                         % if os.path.isfile(origins+'/'+f):
                             <% mime=mimetypes.guess_type(f)[0] %>
-                            ${mime if mime else '未知'}
+                            ${mime if mime else '?'}
                         % endif
                     </td>
                     <td style="text-align: right">
