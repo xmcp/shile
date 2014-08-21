@@ -1,7 +1,6 @@
 #coding=utf-8
 
 from __future__ import division
-from __future__ import unicode_literals
 
 import cherrypy
 from cherrypy.lib.static import serve_file
@@ -81,7 +80,7 @@ class shile:
         if not password or not username:
             try:
                 with open('news.txt','r') as f:
-                    news=f.read()
+                    news=u'%s'%f.read()
             except Exception as e:
                 return err(e)
             template=Template(filename=server_path+'/views/login.html',input_encoding='utf-8')
