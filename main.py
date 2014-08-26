@@ -62,7 +62,7 @@ class shile:
             path+='2f'
         template=Template(filename=server_path+'/views/list.html',input_encoding='utf-8')
         try:
-            return template.render(origins=origin(path[:-2]),urllikes=path[:-2],files=os.listdir(origin(path)))
+            return template.render(origins=origin(path)[:-1],urllikes=path[:-2],files=os.listdir(origin(path)))
         except Exception as e:
             return err(e)
 
@@ -227,8 +227,11 @@ class shile:
         chk()
         try:
             if upload:
+                l('[%s]Edit file: %s'%(cherrypy.session['username'],origin(filename)))
                 with open(origin(filename),'w') as f:
                     f.writelines(upload.split('\n'))
+            else:
+                l('[%s]Preview file: %s'%(cherrypy.session['username'],origin(filename)))
             with open(origin(filename),'r') as f:
                 txt=f.read()
                 template=Template(filename=server_path+'/views/compose.html',input_encoding='utf-8')
