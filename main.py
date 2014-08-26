@@ -62,7 +62,7 @@ class shile:
             path+='2f'
         template=Template(filename=server_path+'/views/list.html',input_encoding='utf-8')
         try:
-            return template.render(origins=origin(path)[:-1],urllikes=path[:-2],files=os.listdir(origin(path)))
+            return template.render(origins=origin(path)[:-1],urllikes=path[:-2],files=os.listdir(origin(path)),user=cherrypy.session['username'])
         except Exception as e:
             return err(e)
 

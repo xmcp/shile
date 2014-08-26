@@ -74,7 +74,9 @@
             <span class="glyphicon glyphicon-hdd"></span>
             &nbsp;Shile
         </a>
-        <button type="button" class="btn btn-default navbar-btn" onclick="window.location.assign('/logout')">注销</button>
+        <button type="button" class="btn btn-default navbar-btn" onclick="window.location.assign('/logout')">
+            注销&nbsp;${user}
+        </button>
         <div class="navbar-form navbar-right" style="margin-right: 0px">
             <div class="form-group">
                 <input id="new_pathname" type="text" value="${origins}" class="form-control" autocomplete="on" onkeypress="cmdcallback(event,redirect)" style="width: 300px" placeholder="目录名">
