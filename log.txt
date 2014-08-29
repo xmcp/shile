@@ -1,0 +1,42 @@
+2014-08-26 16:13:15  Server start
+2014-08-26 16:13:25  [xmcp]Login successful(d861aa7e...)
+2014-08-26 16:13:39  Server start
+2014-08-26 16:19:33  [xmcp]Login successful(d861aa7e...)
+2014-08-26 16:19:43  [xmcp]Preview file: /home/shile/shile/pass.txt
+2014-08-26 17:40:51  [xmcp]Login successful(d861aa7e...)
+2014-08-26 17:41:08  [xmcp]Preview file: /home/shile/shile/log.txt
+2014-08-26 17:41:11  [xmcp]Preview file: /home/shile/shile/pass.txt
+2014-08-26 17:56:18  [xmcp]Upload file: /home/xmcp/doc/image.jpg
+2014-08-26 17:56:21  [xmcp]Preview file: /home/xmcp/doc/image.jpg
+2014-08-26 17:56:31  [xmcp]Download file: /home/xmcp/doc/image.jpg
+2014-08-26 17:56:41  [xmcp]Delete file: /home/xmcp/doc/image.jpg
+2014-08-26 17:56:43  [xmcp]Preview file: /home/xmcp/doc/1201.cpp
+2014-08-26 17:56:45  [xmcp]Download file: /home/xmcp/doc/1201.cpp
+2014-08-26 17:57:02  [xmcp]Logout
+2014-08-28 09:04:53  [xmcp]Login successful(d861aa7e...)
+2014-08-28 09:05:09  [xmcp]Preview file: /home/shile/shile/log.txt
+2014-08-28 09:05:14  [xmcp]Preview file: /home/shile/shile/pass.txt
+2014-08-28 11:06:00  [xmcp]Login successful(d861aa7e...)
+2014-08-28 11:06:16  [xmcp]Creat directory: /home/xmcp/doc/cpp
+2014-08-28 11:06:26  [xmcp]Move file: /home/xmcp/doc -> doc\cpp/
+2014-08-28 11:06:29  [xmcp]Error: [Errno 2] No such file or directory: '/home/xmcp/doc/cpp/'
+2014-08-28 11:06:38  [xmcp]Rename file: /home/xmcp/doccpp -> doc
+2014-08-28 11:06:38  [xmcp]Error: [Errno 2] No such file or directory
+2014-08-28 11:06:51  [xmcp]Delete file: /home/xmcp/doccpp
+2014-08-28 11:06:51  [xmcp]Error: [Errno 2] No such file or directory: '/home/xmcp/doccpp'
+2014-08-28 11:08:37  [xmcp]Move file: /home/xmcp/doc -> doc/cpp/
+2014-08-28 11:08:37  [xmcp]Error: Cannot move a directory '/home/xmcp/doc' into itself 'doc/cpp/'.
+2014-08-28 11:08:45  [xmcp]Delete file: /home/xmcp/doc/cpp
+2014-08-28 12:31:58  [xmcp]Login successful(d861aa7e...)
+2014-08-28 12:32:13  [xmcp]Creat file: /home/xmcp/doc/<script>alert()</script>
+2014-08-28 12:32:13  [xmcp]Error: [Errno 2] No such file or directory: u'/home/xmcp/doc/<script>alert()</script>'
+2014-08-28 12:32:30  [xmcp]Error: [Errno 2] No such file or directory: '<script>alert()</script>/'
+2014-08-28 12:32:47  [xmcp]Error: [Errno 2] No such file or directory: '<iframe src="http://t.cn" />/'
+2014-08-28 12:32:56  [xmcp]Error: [Errno 2] No such file or directory: '<iframe src="http://baidu.com" />/'
+2014-08-28 12:33:12  [xmcp]Error: [Errno 2] No such file or directory: '<iframe src="http://baidu.com" />/'
+2014-08-28 12:33:28  [xmcp]Logout
+2014-08-29 09:57:32  Server start
+2014-08-29 09:59:16  Server start
+2014-08-29 10:00:17  Server start
+2014-08-29 10:00:36  [xmcp]Login successful(d861aa7e...)
+2014-08-29 10:01:25  [xmcp]Creat file: /home/shile/shile/public/xss.js
