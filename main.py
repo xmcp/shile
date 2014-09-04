@@ -240,6 +240,6 @@ class shile:
 
 loadpass()
 log=open('log.txt','a')
-cherrypy.config.update({'tools.staticdir.root':server_path+'/public'})
+cherrypy.config.update({'tools.staticdir.root':server_path+'/'})
 l('Server start')
 cherrypy.quickstart(shile(),'','app.conf')

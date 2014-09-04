@@ -1,1 +1,5 @@
-.idea/__pycache__/log.txtpass.txt
+.idea/
+__pycache__/
+log.txt
+pass.txt
+*.pyc
