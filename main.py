@@ -192,6 +192,8 @@ class shile:
         template=Template(filename=server_path+'/views/signup.html',input_encoding='utf-8')
         if not username or not password:
             return template.render(result=False,username='',password='')
+        if not username.isalnum() or not password.isalnum():
+            return err('用户名或密码非法')
         outhash=encode_psw(username,password)
         l('[%s]Creat password hash'%username)
         return template.render(result=True,hash=outhash,

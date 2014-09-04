@@ -73,10 +73,10 @@
             <div class="well well-sm">
                 <p>恭喜您，您得到了一个对应您的用户名和密码的hash：</p>
                 <pre>${hash}</pre>
-                <p>为了确定您有权利访问此服务器，请您将此hash手动添加到服务器上的：</p>
-                <p>${serverpath}/pass.txt</p>
+                <p>为了确定您有权利访问此服务器，请您将此hash<b>手动</b>添加到服务器上的：</p>
+                <p>${serverpath}/pass.txt 中的任意一行</p>
                 <p>或者让&nbsp;@肖某&nbsp;等有访问权限的用户帮助您。</p>
-                <p>添加完毕后请点击<a href="/reloadpass">此处</a>让服务器重新加载pass.txt。</p>
+                <p>添加完毕后请访问 <a href="/reloadpass">/reloadpass</a> 让服务器重新加载pass.txt。</p>
                 <p>谢谢您的配合！</p>
             </div>
         % endif
