@@ -74,8 +74,28 @@
             <span class="glyphicon glyphicon-hdd"></span>
             &nbsp;Shile
         </a>
+        <span>
+            <a class="dropdown-toggle badge" id="locations-dropdown" data-toggle="dropdown">
+                <span class="caret"></span>
+            </a>
+            <ul class="dropdown-menu" role="menu" aria-labelledby="location-dropdown">
+                <li role="presentation">
+                    <a role="menuitem" tabindex="-1" href="/">您的主页</a>
+                </li>
+                <li role="presentation">
+                    <a role="menuitem" tabindex="-1" href="/view/${urllike(serverpath)}">Shile目录</a>
+                </li>
+                <li role="presentation">
+                    <a role="menuitem" tabindex="-1" href="/view/${urllike(serverpath+'/public')}">公用目录</a>
+                </li>
+                <li role="presentation">
+                    <a role="menuitem" tabindex="-1" href="/view/2f">整个磁盘</a>
+                </li>
+            </ul>
+        </span>
+        &nbsp;
         <button type="button" class="btn btn-default navbar-btn" onclick="window.location.assign('/logout')">
-            注销&nbsp;${user}
+            注销
         </button>
         <div class="navbar-form navbar-right" style="margin-right: 0px">
             <div class="form-group">

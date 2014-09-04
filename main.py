@@ -62,7 +62,8 @@ class shile:
             path+='2f'
         template=Template(filename=server_path+'/views/list.html',input_encoding='utf-8')
         try:
-            return template.render(origins=origin(path)[:-1],urllikes=path[:-2],files=os.listdir(origin(path)),user=cherrypy.session['username'])
+            return template.render(origins=origin(path)[:-1],urllikes=path[:-2],files=os.listdir(origin(path)),
+                                    user=cherrypy.session['username'],serverpath=server_path)
         except Exception as e:
             return err(e)
 
@@ -95,10 +96,8 @@ class shile:
         chk()
         if os.path.isdir('/home/%s/doc'%cherrypy.session['username']):
             home_path='/home/%s/doc'%cherrypy.session['username']
-        elif os.path.isdir('/home/shile/doc'):
-            home_path='/home/shile/doc'
         else:
-            home_path=server_path
+            home_path=server_path+'/public'
         raise cherrypy.HTTPRedirect('/view/'+urllike(home_path))
 
     @cherrypy.expose

@@ -1,0 +1,6 @@
+2014-08-27 11:55:01  Server start
+2014-08-27 11:57:41  [xmcp]Login successful(d861aa7e...)
+2014-09-04 18:19:09  Server start
+2014-09-04 18:19:49  [xmcp]Login successful(d861aa7e...)
+2014-09-04 18:19:49  [xmcp]Error: 'Undefined' object is not iterable
+2014-09-04 18:25:43  [xmcp]Creat file: C:/Users/xiao/Desktop/Shile/public/ha.html
