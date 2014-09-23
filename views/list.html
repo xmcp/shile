@@ -134,9 +134,9 @@
                 <tr>
                     <td><a href="/view/${urllikes+'2f'+urllike(f)}">
                          % if os.path.isdir(origins+'/'+f):
-                            <span class="glyphicon glyphicon-folder-open"></span>
+                            <span class="glyphicon glyphicon-folder-open" title="目录"></span>
                         % else:
-                            <span class="glyphicon glyphicon-file" style="color: #474"></span>
+                            <span class="glyphicon glyphicon-file" style="color: #474" title="文件"></span>
                         % endif
                         &nbsp;${f}
                     </a></td>
@@ -169,20 +169,20 @@
                     <td style="text-align: right">
                         % if os.path.isfile(origins+'/'+f):
                             <a href="#" onclick="down('${f}')">
-                                <span class="glyphicon glyphicon-save"></span>
+                                <span class="glyphicon glyphicon-save" title="下载"></span>
                             </a>&nbsp;
                             <a href="/compose/${urllikes+urllike('/'+f)}" target="_blank">
-                                <span class="glyphicon glyphicon-edit"></span>
+                                <span class="glyphicon glyphicon-edit" title="修改"></span>
                             </a>&nbsp;
                         % endif
                         <a href="#" onclick="move('${f}')">
-                            <span class="glyphicon glyphicon-move"></span>
+                            <span class="glyphicon glyphicon-move" title="移动"></span>
                         </a>&nbsp;
                         <a href="#" onclick="del('${f}')">
-                            <span class="glyphicon glyphicon-trash"></span>
+                            <span class="glyphicon glyphicon-trash"title="删除"></span>
                         </a>&nbsp;
                         <a href="#" onclick="ren('${f}')">
-                            <span class="glyphicon glyphicon-pencil"></span>
+                            <span class="glyphicon glyphicon-pencil" title="重名"></span>
                         </a>
                     </td>
                 </tr>
