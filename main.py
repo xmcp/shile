@@ -11,6 +11,7 @@ import shutil
 from password_generator import encode_psw
 
 server_path=os.getcwd().replace('\\','/')
+deadline=10
 
 def origin(name):
     out=''
@@ -23,9 +24,7 @@ def urllike(name):
         out+=hex(ord(a))[2:]
     return out
 def chk():
-    try:
-        cherrypy.session['login']
-    except:
+    if deadline==0 or 'login' not in cherrypy.session:
         raise cherrypy.HTTPRedirect('/login')
 def err(s):
     try:
@@ -48,6 +47,9 @@ def loadpass():
     with open('pass.txt','r') as f:
         passs=[a.strip() for a in f.readlines()]
 class shile:
+    @cherrypy.expose
+    def default(self,*_):
+        return '404 Not Found'
     @cherrypy.expose
     def view(self,path):
         chk()
@@ -78,6 +80,9 @@ class shile:
 
     @cherrypy.expose
     def login(self,username=None,password=None):
+        global deadline
+        if deadline==0:
+            return '<a href="/unlock">Click to Unlock</a>'
         if not password or not username:
             template=Template(filename=server_path+'/views/login.html',input_encoding='utf-8')
             return template.render(last=lastupdate)
@@ -87,8 +92,10 @@ class shile:
                 cherrypy.session['login']=True
                 cherrypy.session['username']=username
                 l('[%s]Login successful(%s...)'%(username,inhash[:8]))
+                deadline=10
                 raise cherrypy.HTTPRedirect('/')
-        l('[%s]Login failed'%username)
+        l('[%s]Login failed(%s attempts left)'%(username,deadline))
+        deadline-=1
         raise cherrypy.HTTPRedirect('/login')
 
     @cherrypy.expose
@@ -239,6 +246,25 @@ class shile:
                 return template.render(origins=origin(filename),urllikes=filename,txt=txt)
         except Exception as e:
             return err(e)
+            
+    @cherrypy.expose
+    def unlock(self,username=None,password=None):
+        global deadline
+        if deadline!=0:
+            raise cherrypy.HTTPRedirect('/login')
+        if not username or not password:
+            return '<form action="/unlock" method="post"><input name="username"><input name="password"><button type="reset">Go</button></form>'
+        inhash=encode_psw(username,password)
+        for a in passs:
+            if a==inhash:
+                cherrypy.session['login']=True
+                cherrypy.session['username']=username
+                l('[%s]Unlock successful(%s...)'%(username,inhash[:8]))
+                deadline=10
+                raise cherrypy.HTTPRedirect('/')
+        l('[%s]Unlock failed'%username)
+        raise SystemExit()
+        
 
 loadpass()
 log=open('log.txt','a')
