@@ -15,14 +15,14 @@ deadline=10
 
 def origin(name):
     out=''
-    for now in range(0,len(name),2):
-        out+=chr(int(name[now:now+2],16))
+    for now in name.split('_'):
+        out+=chr(int(now,16))
     return out
 def urllike(name):
     out=''
     for a in name.replace('\\','/'):
-        out+=hex(ord(a))[2:]
-    return out
+        out+=(hex(ord(a))[2:]+'_')
+    return out[:-1]
 def chk():
     if deadline==0 or 'login' not in cherrypy.session:
         raise cherrypy.HTTPRedirect('/login')
@@ -60,17 +60,17 @@ class shile:
             return err(e)
         if os.path.isfile(origin(path)):
             raise cherrypy.HTTPRedirect('/prev/'+path+'/'+os.path.split(origin(path))[1])
-        if path[-2:]!='2f':
-            path+='2f'
+        if not path.endswith('_2f'):
+            path+='_2f'
         template=Template(filename=server_path+'/views/list.html',input_encoding='utf-8')
         try:
-            return template.render(origins=origin(path)[:-1],urllikes=path[:-2],files=os.listdir(origin(path)),
+            return template.render(origins=origin(path)[:-1],urllikes=path[:-3],files=os.listdir(origin(path)),
                                     user=cherrypy.session['username'],serverpath=server_path)
         except Exception as e:
             return err(e)
 
     @cherrypy.expose
-    def down(self,path):
+    def down(self,path,_):
         chk()
         try:
             l('[%s]Download file: %s'%(cherrypy.session['username'],origin(path)))
@@ -102,9 +102,9 @@ class shile:
     def index(self):
         chk()
         if os.path.isdir('/home/%s/doc'%cherrypy.session['username']):
-            home_path='/home/%s/doc'%cherrypy.session['username']
+            home_path='/home/%s/doc/'%cherrypy.session['username']
         else:
-            home_path=server_path+'/public'
+            home_path=server_path+'/public/'
         raise cherrypy.HTTPRedirect('/view/'+urllike(home_path))
 
     @cherrypy.expose
