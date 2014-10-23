@@ -16,7 +16,8 @@ deadline=10
 def origin(name):
     out=''
     for now in name.split('_'):
-        out+=chr(int(now,16))
+        if now:
+            out+=chr(int(now,16))
     return out
 def urllike(name):
     out=''
@@ -46,6 +47,20 @@ def loadpass():
     global passs
     with open('pass.txt','r') as f:
         passs=[a.strip() for a in f.readlines()]
+weakpass=('12345','123456','12345678','1234567890',
+          '88888888','8888888888','66666666','6666666666',
+          '00000000','0000000000',
+          'admin','Admin','ADMIN','administrator','Administrator',
+          'webshell','WEBSHELL','Webshell','WebShell','shile','Shile','SHILE',
+          'cinba','xinsj','zhenyn','Zhenyn','zhenyn123','dramf','dramforever',
+          'ftp','iloveyou','password','anonymous','qweasdzxc','username',
+          'aaaaa','qqqqq','zzzzz','xxxxx','sssss',
+          'qwert','QWERT','qwertyuiop','QWERTYUIOP')
+def isweak(pwd):
+    if len(pwd)<4 or pwd in weakpass:
+        return True
+    return False
+
 class shile:
     @cherrypy.expose
     def default(self,*_):
@@ -53,18 +68,19 @@ class shile:
     @cherrypy.expose
     def view(self,path):
         chk()
-        path=urllike(origin(path))
         try:
-            origin(path)
+            path=urllike(origin(path))
+            origins=origin(path)
         except Exception as e:
             return err(e)
-        if os.path.isfile(origin(path)):
-            raise cherrypy.HTTPRedirect('/prev/'+path+'/'+os.path.split(origin(path))[1])
-        if not path.endswith('_2f'):
+        if os.path.isfile(origins):
+            raise cherrypy.HTTPRedirect('/prev/'+path+'/'+os.path.split(origins)[1])
+        if not origins.endswith('/'):
             path+='_2f'
+            origins+='/'
         template=Template(filename=server_path+'/views/list.html',input_encoding='utf-8')
         try:
-            return template.render(origins=origin(path)[:-1],urllikes=path[:-3],files=os.listdir(origin(path)),
+            return template.render(origins=origins[:-1],urllikes=path[:-3],files=os.listdir(origins),
                                     user=cherrypy.session['username'],serverpath=server_path)
         except Exception as e:
             return err(e)
@@ -85,7 +101,9 @@ class shile:
             return '<a href="/unlock">Click to Unlock</a>'
         if not password or not username:
             template=Template(filename=server_path+'/views/login.html',input_encoding='utf-8')
-            return template.render(last=lastupdate)
+            return template.render(last=lastupdate,deadline=deadline)
+        if isweak(password):
+            return err('杜绝弱密码,从我做起!')
         inhash=encode_psw(username,password)
         for a in passs:
             if a==inhash:
@@ -121,8 +139,8 @@ class shile:
     @cherrypy.expose
     def upload(self,path,upfile):
         chk()
-        if path[-1]!='2f':
-            path+='2f'
+        if not path.endswith('_2f'):
+            path+='_2f'
         try:
             with open(origin(path)+upfile.filename,'wb') as f:
                 l('[%s]Upload file: %s'%(cherrypy.session['username'],origin(path)+upfile.filename))
@@ -201,6 +219,8 @@ class shile:
             return template.render(result=False,username='',password='')
         if not username.isalnum() or not password.isalnum():
             return err('用户名或密码非法')
+        if isweak(password):
+            return err('杜绝弱密码,从我做起!')
         outhash=encode_psw(username,password)
         l('[%s]Creat password hash'%username)
         return template.render(result=True,hash=outhash,

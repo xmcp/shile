@@ -19,7 +19,12 @@
         <div class="panel panel-default" style="padding: 0px !important;">
             <div class="panel-heading">
                 <small class="pull-right"><a href="/signup">注册</a></small>
-                <h3 class="panel-title"><b>Shile</b></h3>
+                <h3 class="panel-title">
+                    <b>Shile</b>
+                    % if deadline!=10:
+                        &nbsp;<div class="label label-warning">${10-deadline}次密码输入错误</div>
+                    % endif
+                </h3>
             </div>
             <div class="panel-body">
                 <form action="/login" method="post">
