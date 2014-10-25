@@ -57,7 +57,7 @@ weakpass=('12345','123456','12345678','1234567890',
           'aaaaa','qqqqq','zzzzz','xxxxx','sssss',
           'qwert','QWERT','qwertyuiop','QWERTYUIOP')
 def isweak(pwd):
-    if len(pwd)<4 or pwd in weakpass:
+    if len(pwd)<5 or pwd in weakpass:
         return True
     return False
 
