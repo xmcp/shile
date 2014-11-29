@@ -1,6 +1,9 @@
 #coding=utf-8
-
 from __future__ import division
+import sys
+if sys.version[0]=='2':
+    reload(sys)
+    sys.setdefaultencoding('utf-8')
 
 import cherrypy
 from cherrypy.lib.static import serve_file
@@ -60,6 +63,15 @@ def isweak(pwd):
     if len(pwd)<5 or pwd in weakpass:
         return True
     return False
+def gethome(un):
+    if os.path.isdir('/home/%s'%un):
+        if os.path.isdir('/home/%s/doc'%un):
+            return '/home/%s/doc'%un
+        else:
+            return '/home/%s'%un
+    elif os.path.isdir('c:/users/%s/desktop'%un):
+        return 'c:/users/%s/desktop'%un
+    return None
 
 class shile:
     @cherrypy.expose
@@ -119,9 +131,8 @@ class shile:
     @cherrypy.expose
     def index(self):
         chk()
-        if os.path.isdir('/home/%s/doc'%cherrypy.session['username']):
-            home_path='/home/%s/doc/'%cherrypy.session['username']
-        else:
+        home_path=gethome(cherrypy.session['username'])
+        if not home_path:
             home_path=server_path+'/public/'
         raise cherrypy.HTTPRedirect('/view/'+urllike(home_path))
 
@@ -284,6 +295,23 @@ class shile:
                 raise cherrypy.HTTPRedirect('/')
         l('[%s]Unlock failed'%username)
         raise SystemExit()
+
+    @cherrypy.expose
+    def q(self,username,text=None):
+        if not gethome(username):
+            return err('%s 的用户目录不存在'%username)
+        qfile=os.path.join(gethome(username),'q.txt')
+        if not os.path.isfile(qfile):
+            return err('%s 的存储文件不存在'%username)
+        if not text:
+            template=Template(filename=server_path+'/views/q.html',input_encoding='utf-8')
+            return template.render(username=username)
+        if len(text)>16384:
+            return err('上传文件过大')
+        with open(qfile,'a') as f:
+            f.write('\n%s\n'%text)
+        l('[%s]Add quicknote'%username)
+        raise cherrypy.HTTPRedirect('/')
         
 
 loadpass()
@@ -291,3 +319,4 @@ log=open('log.txt','a')
 cherrypy.config.update({'tools.staticdir.root':server_path+'/'})
 l('Server start')
 cherrypy.quickstart(shile(),'','app.conf')
+
