@@ -313,10 +313,16 @@ class shile:
         l('[%s]Add quicknote'%username)
         raise cherrypy.HTTPRedirect('/')
         
+if 'PORT' in os.environ:
+    shileport=int(os.environ['PORT'])
+    print('Port detected as %d'%shileport)
+else:
+    shileport=3389
 
 loadpass()
 log=open('log.txt','a')
 cherrypy.config.update({'tools.staticdir.root':server_path+'/'})
+cherrypy.config.update({'server.socket_port':shileport})
 l('Server start')
 cherrypy.quickstart(shile(),'','app.conf')
 
