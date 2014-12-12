@@ -1,6 +1,9 @@
 #coding=utf-8
-
 from __future__ import division
+import sys
+if sys.version[0]=='2':
+    reload(sys)
+    sys.setdefaultencoding('utf-8')
 
 import cherrypy
 from cherrypy.lib.static import serve_file
@@ -15,14 +18,15 @@ deadline=10
 
 def origin(name):
     out=''
-    for now in range(0,len(name),2):
-        out+=chr(int(name[now:now+2],16))
+    for now in name.split('_'):
+        if now:
+            out+=chr(int(now,16))
     return out
 def urllike(name):
     out=''
     for a in name.replace('\\','/'):
-        out+=hex(ord(a))[2:]
-    return out
+        out+=(hex(ord(a))[2:]+'_')
+    return out[:-1]
 def chk():
     if deadline==0 or 'login' not in cherrypy.session:
         raise cherrypy.HTTPRedirect('/login')
@@ -46,6 +50,29 @@ def loadpass():
     global passs
     with open('pass.txt','r') as f:
         passs=[a.strip() for a in f.readlines()]
+weakpass=('12345','123456','12345678','1234567890',
+          '88888888','8888888888','66666666','6666666666',
+          '00000000','0000000000',
+          'admin','Admin','ADMIN','administrator','Administrator',
+          'webshell','WEBSHELL','Webshell','WebShell','shile','Shile','SHILE',
+          'cinba','xinsj','zhenyn','Zhenyn','zhenyn123','dramf','dramforever',
+          'ftp','iloveyou','password','anonymous','qweasdzxc','username',
+          'aaaaa','qqqqq','zzzzz','xxxxx','sssss',
+          'qwert','QWERT','qwertyuiop','QWERTYUIOP')
+def isweak(pwd):
+    if len(pwd)<5 or pwd in weakpass:
+        return True
+    return False
+def gethome(un):
+    if os.path.isdir('/home/%s'%un):
+        if os.path.isdir('/home/%s/doc'%un):
+            return '/home/%s/doc'%un
+        else:
+            return '/home/%s'%un
+    elif os.path.isdir('c:/users/%s/desktop'%un):
+        return 'c:/users/%s/desktop'%un
+    return None
+
 class shile:
     @cherrypy.expose
     def default(self,*_):
@@ -53,24 +80,25 @@ class shile:
     @cherrypy.expose
     def view(self,path):
         chk()
-        path=urllike(origin(path))
         try:
-            origin(path)
+            path=urllike(origin(path))
+            origins=origin(path)
         except Exception as e:
             return err(e)
-        if os.path.isfile(origin(path)):
-            raise cherrypy.HTTPRedirect('/prev/'+path+'/'+os.path.split(origin(path))[1])
-        if path[-2:]!='2f':
-            path+='2f'
+        if os.path.isfile(origins):
+            raise cherrypy.HTTPRedirect('/prev/'+path+'/'+os.path.split(origins)[1])
+        if not origins.endswith('/'):
+            path+='_2f'
+            origins+='/'
         template=Template(filename=server_path+'/views/list.html',input_encoding='utf-8')
         try:
-            return template.render(origins=origin(path)[:-1],urllikes=path[:-2],files=os.listdir(origin(path)),
+            return template.render(origins=origins[:-1],urllikes=path[:-3],files=os.listdir(origins),
                                     user=cherrypy.session['username'],serverpath=server_path)
         except Exception as e:
             return err(e)
 
     @cherrypy.expose
-    def down(self,path):
+    def down(self,path,_):
         chk()
         try:
             l('[%s]Download file: %s'%(cherrypy.session['username'],origin(path)))
@@ -85,7 +113,9 @@ class shile:
             return '<a href="#/unlock" onclick=\'alert("Unlock failed.")\'>Click to Unlock</a>'
         if not password or not username:
             template=Template(filename=server_path+'/views/login.html',input_encoding='utf-8')
-            return template.render(last=lastupdate)
+            return template.render(last=lastupdate,deadline=deadline)
+        if isweak(password):
+            return err('杜绝弱密码,从我做起!')
         inhash=encode_psw(username,password)
         for a in passs:
             if a==inhash:
@@ -101,10 +131,9 @@ class shile:
     @cherrypy.expose
     def index(self):
         chk()
-        if os.path.isdir('/home/%s/doc'%cherrypy.session['username']):
-            home_path='/home/%s/doc'%cherrypy.session['username']
-        else:
-            home_path=server_path+'/public'
+        home_path=gethome(cherrypy.session['username'])
+        if not home_path:
+            home_path=server_path+'/public/'
         raise cherrypy.HTTPRedirect('/view/'+urllike(home_path))
 
     @cherrypy.expose
@@ -121,8 +150,8 @@ class shile:
     @cherrypy.expose
     def upload(self,path,upfile):
         chk()
-        if path[-1]!='2f':
-            path+='2f'
+        if not path.endswith('_2f'):
+            path+='_2f'
         try:
             with open(origin(path)+upfile.filename,'wb') as f:
                 l('[%s]Upload file: %s'%(cherrypy.session['username'],origin(path)+upfile.filename))
@@ -201,6 +230,8 @@ class shile:
             return template.render(result=False,username='',password='')
         if not username.isalnum() or not password.isalnum():
             return err('用户名或密码非法')
+        if isweak(password):
+            return err('杜绝弱密码,从我做起!')
         outhash=encode_psw(username,password)
         l('[%s]Creat password hash'%username)
         return template.render(result=True,hash=outhash,
@@ -264,10 +295,34 @@ class shile:
                 raise cherrypy.HTTPRedirect('/')
         l('[%s]Unlock failed'%username)
         raise SystemExit()
+
+    @cherrypy.expose
+    def q(self,username,text=None):
+        if not gethome(username):
+            return err('%s 的用户目录不存在'%username)
+        qfile=os.path.join(gethome(username),'q.txt')
+        if not os.path.isfile(qfile):
+            return err('%s 的存储文件不存在'%username)
+        if not text:
+            template=Template(filename=server_path+'/views/q.html',input_encoding='utf-8')
+            return template.render(username=username)
+        if len(text)>16384:
+            return err('上传文件过大')
+        with open(qfile,'a') as f:
+            f.write('\n%s\n'%text)
+        l('[%s]Add quicknote'%username)
+        raise cherrypy.HTTPRedirect('/')
         
+if 'PORT' in os.environ:
+    shileport=int(os.environ['PORT'])
+    print('Port detected as %d'%shileport)
+else:
+    shileport=3389
 
 loadpass()
 log=open('log.txt','a')
 cherrypy.config.update({'tools.staticdir.root':server_path+'/'})
+cherrypy.config.update({'server.socket_port':shileport})
 l('Server start')
 cherrypy.quickstart(shile(),'','app.conf')
+

@@ -2,16 +2,16 @@
 <%!
     import  os
     import mimetypes
-    def urllike(name):
-        out=''
-        for a in name:
-            out+=hex(ord(a))[2:]
-        return out
     def origin(name):
         out=''
-        for now in range(0,len(name),2):
-            out+=chr(int(name[now:now+2],16))
+        for now in name.split('_'):
+            out+=chr(int(now,16))
         return out
+    def urllike(name):
+        out=''
+        for a in name.replace('\\','/'):
+            out+=(hex(ord(a))[2:]+'_')
+        return out[:-1]
 %>
 <html>
 <head lang="zh">
@@ -29,8 +29,8 @@
         function urllike(name) {
             var out=''
             for(var now=0;now<name.length;now++)
-                out+=name.charCodeAt(now).toString(16)
-            return out
+                out+=(name.charCodeAt(now).toString(16)+'_')
+            return out.slice(0,-1)
         }
         function cmdcallback(e,func) {
             var keynum
@@ -44,11 +44,11 @@
             window.location.assign('/view/'+urllike(document.getElementById('new_pathname').value))
         }
         function down(name) {
-                window.open('/down/${urllikes+"2f"}'+urllike(name))
+                window.open('/down/${urllikes+"_2f_"}'+urllike(name)+'/'+name)
         }
         function del(name) {
             if(confirm('确定删除 '+name+' 吗？'))
-                window.location.assign('/delete/${urllikes+"2f"}'+urllike(name))
+                window.location.assign('/delete/${urllikes+"_2f_"}'+urllike(name))
         }
         function ren(name) {
             newname=prompt('为 '+name+' 输入新的文件名：')
@@ -132,7 +132,7 @@
         <tbody>
             % for f in files:
                 <tr>
-                    <td><a href="/view/${urllikes+'2f'+urllike(f)}">
+                    <td><a href="/view/${urllikes+'_2f_'+urllike(f)}">
                          % if os.path.isdir(origins+'/'+f):
                             <span class="glyphicon glyphicon-folder-open" title="目录"></span>
                         % else:
@@ -171,7 +171,7 @@
                             <a href="#" onclick="down('${f}')">
                                 <span class="glyphicon glyphicon-save" title="下载"></span>
                             </a>&nbsp;
-                            <a href="/compose/${urllikes+urllike('/'+f)}" target="_blank">
+                            <a href="/compose/${urllikes+'_2f_'+urllike(f)}" target="_blank">
                                 <span class="glyphicon glyphicon-edit" title="修改"></span>
                             </a>&nbsp;
                         % endif
