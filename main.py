@@ -82,7 +82,7 @@ class shile:
     def login(self,username=None,password=None):
         global deadline
         if deadline==0:
-            return '<a href="/unlock">Click to Unlock</a>'
+            return '<a href="#/unlock" onclick=\'alert("Unlock failed.")\'>Click to Unlock</a>'
         if not password or not username:
             template=Template(filename=server_path+'/views/login.html',input_encoding='utf-8')
             return template.render(last=lastupdate)
