@@ -95,6 +95,7 @@ class shile:
             return template.render(origins=origins[:-1],urllikes=path[:-3],files=os.listdir(origins),
                                     user=cherrypy.session['username'],serverpath=server_path)
         except Exception as e:
+            raise
             return err(e)
 
     @cherrypy.expose
@@ -148,13 +149,15 @@ class shile:
         raise cherrypy.HTTPRedirect('/')
 
     @cherrypy.expose
-    def upload(self,path,upfile):
+    def upload(self,path,upfile,upfilename,xhr=None):
         chk()
         if not path.endswith('_2f'):
             path+='_2f'
+        if os.path.exists(origin(path)+upfilename):
+            return err('%s 已经存在'%(origin(path)+upfilename))
         try:
-            with open(origin(path)+upfile.filename,'wb') as f:
-                l('[%s]Upload file: %s'%(cherrypy.session['username'],origin(path)+upfile.filename))
+            with open(origin(path)+upfilename,'wb') as f:
+                l('[%s]Upload file: %s'%(cherrypy.session['username'],origin(path)+upfilename))
                 nowprog=-1
                 while upfile.file.tell()!=nowprog:
                     nowprog=upfile.file.tell()
@@ -162,7 +165,10 @@ class shile:
         except Exception as e:
             return err(e)
         else:
-            raise cherrypy.HTTPRedirect('/view/'+path)
+            if xhr=='yes':
+                return 'OK'
+            else:
+                raise cherrypy.HTTPRedirect('/view/'+path)
 
     @cherrypy.expose
     def delete(self,path):

@@ -1,5 +1,6 @@
 .idea/
 __pycache__/
+public/*
 log.txt
 pass.txt
 *.pyc

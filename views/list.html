@@ -24,47 +24,95 @@
         <script src="https://oss.maxcdn.com/html5shiv/3.7.2/html5shiv.min.js"></script>
         <script src="https://oss.maxcdn.com/respond/1.4.2/respond.min.js"></script>
     <![endif]-->
-    <title>Shile</title>
+    <title>${origins|h} - Shile</title>
     <script>
         function urllike(name) {
-            var out=''
+            var out='';
             for(var now=0;now<name.length;now++)
-                out+=(name.charCodeAt(now).toString(16)+'_')
-            return out.slice(0,-1)
+                out+=(name.charCodeAt(now).toString(16)+'_');
+            return out.slice(0,-1);
         }
         function cmdcallback(e,func) {
-            var keynum
-            if(window.event) keynum=e.keyCode //IE
-            else keynum=e.which
+            var keynum;
+            if(window.event) keynum=e.keyCode; //IE
+            else keynum=e.which;
             if(keynum==13) //enter
-                func()
-            return true
+                func();
+            return true;
         }
         function redirect() {
-            window.location.assign('/view/'+urllike(document.getElementById('new_pathname').value))
+            window.location.assign('/view/'+urllike(document.getElementById('new_pathname').value));
         }
         function down(name) {
-                window.open('/down/${urllikes+"_2f_"}'+urllike(name)+'/'+name)
+                window.open('/down/${urllikes+"_2f_"}'+urllike(name)+'/'+name);
         }
         function del(name) {
             if(confirm('确定删除 '+name+' 吗？'))
-                window.location.assign('/delete/${urllikes+"_2f_"}'+urllike(name))
+                window.location.assign('/delete/${urllikes+"_2f_"}'+urllike(name));
         }
         function ren(name) {
-            newname=prompt('为 '+name+' 输入新的文件名：')
+            newname=prompt('为 '+name+' 输入新的文件名：');
             if(newname!=''&&newname!=null)
-                window.location.assign('/rename/${urllikes}/'+urllike(name)+'/'+urllike(newname))
+                window.location.assign('/rename/${urllikes}/'+urllike(name)+'/'+urllike(newname));
         }
         function move(name) {
-            newpath=prompt('将 '+name+' 移动到：')
+            newpath=prompt('将 '+name+' 移动到：');
             if(newpath!=''&&newpath!=null) {
-                window.location.assign('/move/${urllikes}/'+urllike(name)+'/'+urllike(newpath))
+                window.location.assign('/move/${urllikes}/'+urllike(name)+'/'+urllike(newpath));
             }
         }
         function newfolder() {
-            n=prompt('新目录名：')
+            n=prompt('新目录名：');
             if(n!=''&&n!=null)
-                window.location.assign('/newfolder/${urllikes}/'+urllike(n))
+                window.location.assign('/newfolder/${urllikes}/'+urllike(n));
+        }
+        function upload() {
+            var file=document.getElementById('upfile').files[0];
+            window.uploadbtn=document.getElementById('uploadbtn');
+            try {FormData;}
+            catch(_) { //fuck IE
+                document.getElementsByName('upfilename')[0].value=file.name;
+                uploadbtn.innerText='手动上传中……';
+                uploadbtn.setAttribute('disabled','disabled');
+                document.getElementById('iesubmit').click();
+                return;
+            }
+            function progress_callback(event) {
+                var percent = Math.round(event.loaded*100/event.total);
+                uploadbtn.innerText='上传 '+percent.toString()+'%';
+            }
+            function complete_callback(event) {
+                uploadbtn.innerText='上传完毕';
+                if(event.target.responseText==="OK")
+                    window.location.reload(true);
+                else
+                    document.write(event.target.responseText);
+            }
+            function failed_callback() {
+                uploadbtn.removeAttribute('disabled');
+                uploadbtn.innerText='上传失败';
+            }
+            function cancel_callback() {
+                uploadbtn.removeAttribute('disabled');
+                uploadbtn.innerText='上传取消';
+            }
+            var xhr=new XMLHttpRequest();
+            var fd=new FormData();
+            if(file.size>100*1024*1024) {
+                alert('文件不得超过100M');
+                return;
+            }
+            fd.append("path",document.getElementsByName('path')[0].value);
+            fd.append("upfile",file);
+            fd.append("xhr","yes");
+            fd.append("upfilename",file.name);
+            xhr.upload.addEventListener("progress",progress_callback,false);
+            xhr.addEventListener("load",complete_callback,false);
+            xhr.addEventListener("error",failed_callback,false);
+            xhr.addEventListener("abort",cancel_callback,false);
+            xhr.open("POST", "/upload");
+            uploadbtn.setAttribute('disabled','disabled');
+            xhr.send(fd);
         }
     </script>
 </head>
@@ -80,10 +128,10 @@
                     <a role="menuitem" tabindex="-1" href="/">您的主页</a>
                 </li>
                 <li role="presentation">
-                    <a role="menuitem" tabindex="-1" href="/view/${urllike(serverpath)}">Shile目录</a>
+                    <a role="menuitem" tabindex="-1" href="/view/${urllike(serverpath)|h}">Shile目录</a>
                 </li>
                 <li role="presentation">
-                    <a role="menuitem" tabindex="-1" href="/view/${urllike(serverpath+'/public')}">公用目录</a>
+                    <a role="menuitem" tabindex="-1" href="/view/${urllike(serverpath+'/public')|h}">公用目录</a>
                 </li>
                 <li role="presentation">
                     <a role="menuitem" tabindex="-1" href="/view/2f">整个磁盘</a>
@@ -114,7 +162,7 @@
             % for l in range(len(paths)):
                 % if paths[l]!='/':
                     <li>
-                        <a href="/view/${urllike(''.join(paths[:l+1]))}">${paths[l][:-1]}</a>
+                        <a href="/view/${urllike(''.join(paths[:l+1]))|h}">${paths[l][:-1]|h}</a>
                     </li>
                 % endif
             % endfor
@@ -138,12 +186,12 @@
                         % else:
                             <span class="glyphicon glyphicon-file" style="color: #474" title="文件"></span>
                         % endif
-                        &nbsp;${f}
+                        &nbsp;${f|h}
                     </a></td>
                     <td style="text-align: right">
                         % if os.path.isfile(origins+'/'+f):
                             <% mime=mimetypes.guess_type(f)[0] %>
-                            ${mime if mime else 'Unknown'}
+                            ${(mime if mime else 'Unknown')|h}
                         % else:
                             目录
                         % endif
@@ -225,11 +273,13 @@
                         <div class="input-group">
                             <span class="input-group-addon"><span class="glyphicon glyphicon-paperclip"></span></span>
                             <input type="hidden" name="path" value="${urllikes}">
-                            <input type="file" name="upfile" class="form-control">
+                            <input type="file" name="upfile" id="upfile" class="form-control">
                             <span class="input-group-btn">
-                                <button class="btn btn-primary" type="submit">上传</button>
+                                <button class="btn btn-primary" id="uploadbtn" type="button" onclick="upload()">上传</button>
                             </span>
                         </div>
+                        <input type="hidden" name="upfilename" value="">
+                        <button id="iesubmit" style="display: none" type="submit">手动上传</button>
                     </form>
                 </div>
             </div>
