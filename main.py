@@ -11,8 +11,9 @@ from mako.template import Template
 import os
 import time
 import shutil
-from password_generator import encode_psw
+import hasher
 
+SALT='shile'
 server_path=os.getcwd().replace('\\','/')
 deadline=10
 
@@ -73,7 +74,7 @@ def gethome(un):
         return 'c:/users/%s/desktop'%un
     return None
 
-class shile:
+class Shile:
     @cherrypy.expose
     def default(self,*_):
         return '404 Not Found'
@@ -95,7 +96,6 @@ class shile:
             return template.render(origins=origins[:-1],urllikes=path[:-3],files=os.listdir(origins),
                                     user=cherrypy.session['username'],serverpath=server_path)
         except Exception as e:
-            raise
             return err(e)
 
     @cherrypy.expose
@@ -117,14 +117,12 @@ class shile:
             return template.render(last=lastupdate,deadline=deadline)
         if isweak(password):
             return err('杜绝弱密码,从我做起!')
-        inhash=encode_psw(username,password)
-        for a in passs:
-            if a==inhash:
-                cherrypy.session['login']=True
-                cherrypy.session['username']=username
-                l('[%s]Login successful(%s...)'%(username,inhash[:8]))
-                deadline=10
-                raise cherrypy.HTTPRedirect('/')
+        if hasher.verify_psw(passs,SALT,username,password):
+            cherrypy.session['login']=True
+            cherrypy.session['username']=username
+            l('[%s]Login successful'%username)
+            deadline=10
+            raise cherrypy.HTTPRedirect('/')
         l('[%s]Login failed(%s attempts left)'%(username,deadline))
         deadline-=1
         raise cherrypy.HTTPRedirect('/login')
@@ -141,7 +139,7 @@ class shile:
     def logout(self):
         try:
             cherrypy.session['login']
-        except:
+        except KeyError:
             pass
         else:
             l('[%s]Logout'%cherrypy.session['username'])
@@ -238,7 +236,7 @@ class shile:
             return err('用户名或密码非法')
         if isweak(password):
             return err('杜绝弱密码,从我做起!')
-        outhash=encode_psw(username,password)
+        outhash=hasher.encode_psw(SALT,username,password)
         l('[%s]Creat password hash'%username)
         return template.render(result=True,hash=outhash,
                                username=username,password=password,serverpath=server_path)
@@ -291,14 +289,12 @@ class shile:
             raise cherrypy.HTTPRedirect('/login')
         if not username or not password:
             return '<form action="/unlock" method="post"><input name="username"><input name="password"><button type="reset">Go</button></form>'
-        inhash=encode_psw(username,password)
-        for a in passs:
-            if a==inhash:
-                cherrypy.session['login']=True
-                cherrypy.session['username']=username
-                l('[%s]Unlock successful(%s...)'%(username,inhash[:8]))
-                deadline=10
-                raise cherrypy.HTTPRedirect('/')
+        if hasher.verify_psw(passs,SALT,username,password):
+            cherrypy.session['login']=True
+            cherrypy.session['username']=username
+            l('[%s]Unlock successful'%username)
+            deadline=10
+            raise cherrypy.HTTPRedirect('/')
         l('[%s]Unlock failed'%username)
         raise SystemExit()
 
@@ -330,5 +326,5 @@ log=open('log.txt','a')
 cherrypy.config.update({'tools.staticdir.root':server_path+'/'})
 cherrypy.config.update({'server.socket_port':shileport})
 l('Server start')
-cherrypy.quickstart(shile(),'','app.conf')
+cherrypy.quickstart(Shile(),'','app.conf')
 
