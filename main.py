@@ -342,6 +342,9 @@ cherrypy.quickstart(Shile(),'',{
     },
     '/q': {
          'tools.response_headers.headers':[('Access-Control-Allow-Origin','*')],
+    },
+    '/down': {
+        'tools.gzip.on': False,
     }
 })
 
