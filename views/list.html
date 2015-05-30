@@ -51,18 +51,18 @@
                 window.location.assign('/delete/${urllikes+"_2f_"}'+urllike(name));
         }
         function ren(name) {
-            newname=prompt('为 '+name+' 输入新的文件名：');
+            var newname=prompt('为 '+name+' 输入新的文件名：');
             if(newname!=''&&newname!=null)
                 window.location.assign('/rename/${urllikes}/'+urllike(name)+'/'+urllike(newname));
         }
         function move(name) {
-            newpath=prompt('将 '+name+' 移动到：');
+            var newpath = prompt('将 ' + name + ' 移动到：');
             if(newpath!=''&&newpath!=null) {
                 window.location.assign('/move/${urllikes}/'+urllike(name)+'/'+urllike(newpath));
             }
         }
         function newfolder() {
-            n=prompt('新目录名：');
+            var n=prompt('新目录名：');
             if(n!=''&&n!=null)
                 window.location.assign('/newfolder/${urllikes}/'+urllike(n));
         }
@@ -178,7 +178,7 @@
             </tr>
         </thead>
         <tbody>
-            % for f in files:
+            % for f in sorted(files,key=lambda x:x.lower()):
                 <tr>
                     <td><a href="/view/${urllikes+'_2f_'+urllike(f)}">
                          % if os.path.isdir(origins+'/'+f):

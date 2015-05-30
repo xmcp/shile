@@ -13,7 +13,7 @@ BASE16_stoi={
     '9':9,'a':10,'b':11,'c':12,'d':13,'e':14,'f':15
 }
 BASE16_itos='0123456789abcdef'
-LEVEL=8192
+LEVEL=8086
 
 def _MD100(pswin):
     psw1=hashlib.sha224()

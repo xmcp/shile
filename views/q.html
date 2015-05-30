@@ -18,12 +18,12 @@
 <body style="background-color: #DDD"><div class="container">
     <br />
     <form action="/q" method="post">
-        <input name="username" value="${username}" type="hidden">
+        <input name="username" value="${username|h}" type="hidden">
         <div class="well well-sm">
             <button class="btn btn-success pull-right" type="submit">保存</button>
             <h5 class="pull-right"><a href="/">返回</a>&nbsp;&nbsp;</h5>
             <h5>
-                <span>用户名:&nbsp${username}</span>
+                <span>用户名:&nbsp${username|h}</span>
             </h5>
         </div>
         <textarea autofocus="autofocus" name="text" class="form-control" style="height: 500px;width: 100%"></textarea>

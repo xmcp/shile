@@ -1,4 +1,7 @@
 <!DOCTYPE html>
+<%!
+    import time
+%>
 <html>
 <head lang="zh">
     <meta charset="UTF-8">
@@ -12,27 +15,31 @@
     <![endif]-->
     <title>Shile</title>
     <script>
-        iknow=false
+        iknow=false;
         function submit() {
-            if(!iknow) alert('不，您没有同意使用条款。')
+            if(!iknow) alert('不，您没有同意使用条款。');
             else {
-                $('#true-username').val($('#username').val())
-                $('#true-password').val($('#password').val())
+                $('#true-username').val($('#username').val());
+                $('#true-password').val($('#password').val());
                 $('#submit-btn').click()
             }
         }
         function iknowit() {
-            iknow=true
-            $('#iknow-btn').html('✓&nbsp;我同意')
-            $('#iknow-btn').attr('disabled','disabled')
+            var iknow=true;
+            $('#iknow-btn').html('✓&nbsp;我同意').attr('disabled','disabled');
         }
+        setInterval(function(){ // time updating
+            var now=new Date();
+            $("#time-var").text((1900+now.getYear())+"年 "+(now.getMonth()+1)+"月 "+now.getDate()
+                +"日 "+now.getHours()+"时 "+now.getMinutes()+"分 "+now.getSeconds()+"秒");
+        },1000);
     </script>
 </head>
 <body style="background-color: #DDD"><div class="container">
     <br /><br /><br />
     <div class="col-sm-3"></div>
     <div class="col-sm-6">
-        <div class="panel panel-default" style="padding: 0px !important;">
+        <div class="panel panel-default" style="padding: 0 !important;">
             <div class="panel-heading">
                 <small class="pull-right"><a href="/login">登录</a></small>
                 <h3 class="panel-title"><b>Sign up</b></h3>
@@ -93,11 +100,12 @@
                     <li>您不能通过本系统破坏此服务器上他人或集体的文件资料。</li>
                     <li>您不在本系统中尝试使用扫描器等可能破坏数据完整性和可用性的软件。</li>
                     <li>您不能修改、删除系统文件，除非您确定此操作无害并为其后果负责。</li>
-                    <li>您不能在未征得管理员同意的情况下修改或删除log.txt或pass.txt。</li>
+                    <li>您不能在未征得管理员同意的情况下修改或删除本系统的日志和密码数据库文件。</li>
                     <li>您不能将密码告诉他人，否则一切后果由您承担。</li>
                     <li>您不能在本系统中储存重要资料，如果数据丢失，本系统不负责。</li>
                     <li>如果您通过日志发现他人篡改或毁坏您的数据，请与其联系。</li>
-                    <li>本条款可能随时更改而不通知您，@xmcp保留对此条款的所有权利。</li>
+                    <li>本条款<b>绝对会</b>随时更改而不通知您，@xmcp保留对此条款的所有权利。</li>
+                    <li> ↑ 你看，我没骗你：现在时间是 <span id="time-var">loading...</span></li>
                 </div>
                 <div class="modal-footer">
                     <button id="iknow-btn" class="btn btn-primary" onclick="iknowit()">

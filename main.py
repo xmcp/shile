@@ -13,7 +13,7 @@ import time
 import shutil
 import hasher
 
-SALT='shile'
+SALT='shILE'
 server_path=os.getcwd().replace('\\','/')
 deadline=10
 
@@ -76,9 +76,6 @@ def gethome(un):
 
 class Shile:
     @cherrypy.expose
-    def default(self,*_):
-        return '404 Not Found'
-    @cherrypy.expose
     def view(self,path):
         chk()
         try:
@@ -101,6 +98,7 @@ class Shile:
     @cherrypy.expose
     def down(self,path,_):
         chk()
+        cherrypy.session.release_lock()
         try:
             l('[%s]Download file: %s'%(cherrypy.session['username'],origin(path)))
             return serve_file(origin(path),"application/x-download", "attachment")
@@ -205,8 +203,9 @@ class Shile:
             raise cherrypy.HTTPRedirect('/view/'+path)
 
     @cherrypy.expose
-    def prev(self,path,filename):
+    def prev(self,path,_):
         chk()
+        cherrypy.session.release_lock()
         try:
             with open(origin(path),'rb') as f:
                 txt=f.read()
@@ -227,7 +226,7 @@ class Shile:
         else:
             raise cherrypy.HTTPRedirect('/view/'+path)
 
-    @cherrypy.expose
+    @cherrypy.expose()
     def signup(self,username=None,password=None):
         template=Template(filename=server_path+'/views/signup.html',input_encoding='utf-8')
         if not username or not password:
@@ -326,5 +325,23 @@ log=open('log.txt','a')
 cherrypy.config.update({'tools.staticdir.root':server_path+'/'})
 cherrypy.config.update({'server.socket_port':shileport})
 l('Server start')
-cherrypy.quickstart(Shile(),'','app.conf')
+cherrypy.quickstart(Shile(),'',{
+    'global': {
+        'engine.autoreload.on':False,
+        'request.show_tracebacks': False,
+        'server.socket_host':'0.0.0.0',
+        'tools.response_headers.on':True,
+    },
+    '/': {
+        'tools.sessions.on':True,
+        'tools.gzip.on': True,
+    },
+    '/public': {
+        'tools.staticdir.on':True,
+        'tools.staticdir.dir':'public',
+    },
+    '/q': {
+         'tools.response_headers.headers':[('Access-Control-Allow-Origin','*')],
+    }
+})
 
